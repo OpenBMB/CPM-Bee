@@ -29,7 +29,7 @@ CPM-Bee是一个完全开源、允许商用的百亿参数中英文基座模型�
 $ git clone -b master --single-branch https://github.com/OpenBMB/CPM-Bee.git
 ```
 并确保您的环境符合要求：
-```bsh
+```bash
 - python>=3.7
 - torch>=1.10
 ```
@@ -80,9 +80,9 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 
 #### 任务流程
 要在特定任务上微调模型，您应该准备数据集并按如下方式执行：
-1. 重新调整数据格式。
+- 重新调整数据格式。
 您可以将分类问题集成到选择题的格式中。有关数据格式的更多信息，您可以查看CPM-Bee数据格式
-2. 将数据集预处理为二进制文件。
+- 将数据集预处理为二进制文件。
 要构建预处理数据集，您可以运行
 ```bash
 $ python preprocess_dataset.py --input your/reformated/data/path --output_path your/binary/data/path --output_name data_name
@@ -95,7 +95,7 @@ $ python preprocess_dataset.py --input your/reformated/data/path --output_path y
          |-- data_name
          |-- meta.bin
 ```
-3. 微调CPM-Bee
+- 微调CPM-Bee
 要开始微调，您可以运行：
 ``` bash
 $ bash scripts/finetune_cpm_bee.sh
@@ -113,7 +113,7 @@ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_en
 
 ### 模型压缩
 
-基于[BMCook]([OpenBMB/BMCook: Model Compression for Big Models (github.com)](https://github.com/OpenBMB/BMCook))，我们对原始的CPM-Bee基座模型进行压缩，提供了多种大小的CPM-Bee模型来适应各种不同的场景。
+基于[BMCook](https://github.com/OpenBMB/BMCook)，我们对原始的CPM-Bee基座模型进行压缩，提供了多种大小的CPM-Bee模型来适应各种不同的场景。
 
 | 模型          | #Attn.层 | #FFN层 | Attn隐状态维度 | FFN隐状态维度 | 下载                                       |
 | ----------- | ------- | ----- | --------- | -------- | ---------------------------------------- |
@@ -203,7 +203,7 @@ python text_generation.py
 
 
 
-## CPM-Bee+ Decoder Tuning
+### CPM-Bee+ Decoder Tuning
 
 使用和OpenBMB和THUNLP联合自研的[Decoder Tuning](https://arxiv.org/abs/2212.08408)（ACL 2023）技术，可以仅仅使用API的情况下，不访问和修改模型参数即可大幅提高下游任务的性能。
 

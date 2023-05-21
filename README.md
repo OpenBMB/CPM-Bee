@@ -17,13 +17,17 @@
 
 CPM-Bee是一个完全开源、允许商用的百亿参数中英文基座模型，也是[CPM-live](https://live.openbmb.org/)训练的第二个里程碑。它采用Transformer自回归架构（auto-regressive），在超过3万亿高质量语料（3 trillion tokens）上进行预训练，拥有强大的基础能力。
 
+
+
+## ✨ 模型特性
+
 - **开源可商用**：OpenBMB始终秉承“让大模型飞入千家万户”的开源精神，CPM-Bee基座模型将完全开源并且可商用，以推动大模型领域的发展。
 - **中英双语性能优异**： CPM-Bee基座模型在预训练语料上进行了严格的筛选和配比，同时在中英双语上具有亮眼表现，具体可参见评测任务和结果。
 - **超大规模高质量语料**： CPM-Bee基座模型在超过3万亿语料（3 trillion tokens）进行训练，是开源社区内经过语料最多的模型之一。同时，我们对预训练语料进行了严格的筛选、清洗和后处理以确保质量。
 - **OpenBMB大模型系统生态支持**： OpenBMB大模型系统在高性能预训练、适配、压缩、部署、工具开发了一系列工具，CPM-Bee基座模型将配套所有的工具脚本，高效支持开发者进行进阶使用。
 - **强大的对话和工具使用能力**： 结合OpenBMB在指令微调和工具学习的探索，我们在CPM-Bee基座模型的基础上进行微调，训练出了具有强大对话和工具使用能力的实例模型，API和内测将于近期开放。
 
-## 安装
+## 🚀 安装和使用
 您需要克隆该仓库：
 ```bash
 $ git clone -b master --single-branch https://github.com/OpenBMB/CPM-Bee.git
@@ -39,7 +43,7 @@ $ cd CPM-Bee/cpm-live
 $ pip install -r requirements.txt
 ```
 
-## 模型
+#### 模型
 
 模型权重下载链接
 
@@ -54,7 +58,7 @@ $ pip install -r requirements.txt
 "选择题": {"input": "父母都希望自己的孩子诚实、勇敢、有礼貌。要想让孩子成为这样的人，父母首先得从自己做起，要是连自己都做不到，又怎能要求孩子做到呢？", "options": {"<option_0>": "少提要求", "<option_1>": "降低标准", "<option_2>": "自己先做好", "<option_3>": "让孩子拿主意"}, "question": "教育孩子时，父母应该：", "<ans>": ""}
 ```
 
-## OpenBMB
+## <img src="https://i.imgloc.com/2023/05/21/V4nLS3.png" width="25px"> OpenBMB
 
 基于OpenBMB的大模型系统生态，我们在训练CPM-Bee的过程中实现了全流程高效。同时提供了继续训练（基于BMTrain）、微调（基于OpenPrompt和OpenDelta）、工具使用（基于BMTools）、模型压缩（基于BMCook）、高效推理（基于BMInf）的全套脚本，可以协助开发者快速上手和使用CPM-Bee。
 
@@ -183,7 +187,7 @@ python text_generation.py
 您可以设置不同的输入格式，以适应不同的推理任务。
 
 
-## 性能表现
+## 💫 性能表现
 
 ### 零样本评测
 

@@ -15,7 +15,7 @@
 </div>
 
 
-CPM-Bee是一个完全开源、允许商用的百亿参数中英文基座模型，也是[CPM-live](https://live.openbmb.org/)训练的第二个里程碑。它采用Transformer自回归架构（auto-regressive），在超过3万亿高质量语料（3 trillion tokens）上进行预训练，拥有强大的基础能力。
+**CPM-Bee**是一个完全开源、允许商用的百亿参数中英文基座模型，也是[**CPM-live**](https://live.openbmb.org/)训练的第二个里程碑。它采用Transformer自回归架构（auto-regressive），在超过3万亿高质量语料（3 trillion tokens）上进行预训练，拥有强大的基础能力。
 
 
 
@@ -216,7 +216,7 @@ python text_generation.py
 
 ### CPM-Bee+ Decoder Tuning
 
-使用和OpenBMB和THUNLP联合自研的[Decoder Tuning](https://arxiv.org/abs/2212.08408)（ACL 2023）技术，可以仅仅使用API的情况下，不访问和修改模型参数即可大幅提高下游任务的性能。
+使用和OpenBMB和THUNLP联合自研的[Decoder Tuning](https://arxiv.org/abs/2212.08408)（将发表于ACL 2023）技术，可以仅仅使用API的情况下，不访问和修改模型参数即可大幅提高下游任务的性能。
 
 
 

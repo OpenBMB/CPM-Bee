@@ -46,7 +46,7 @@ $ git clone -b master --single-branch https://github.com/OpenBMB/CPM-Bee.git
 ```
 我们建议使用Anaconda管理环境并从PyPI安装其他依赖项：
 ```bash
-$ cd CPM-Bee/cpm-live
+$ cd src
 $ pip install -r requirements.txt
 ```
 
@@ -79,8 +79,7 @@ $ pip install -r requirements.txt
 
 1. 全参数微调：
 ```bash
-$ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=localhost:12345 finetune_cpm_bee.py \
---use-delta False \
+$ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=localhost:12345 finetune_cpm_bee.py
 ```
 
 2. 增量微调：

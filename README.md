@@ -3,26 +3,25 @@
 
 ## CPM-Bee
 
-**An Open-source Chinese-English Language Model with 10B Parameters**
+**百亿参数的开源中英文双语基座大模型**
 
 <p align="center">
   <a href="#模型">模型</a> •
-  <a href="#CPM-Bee+OpenBMB">OpenBMB体系</a> •
-
- <a href="#性能表现">性能表现</a> •
+  <a href="#OpenBMB">OpenBMB体系</a> •
+  <a href="#性能表现">性能表现</a> •
 
 </p>
 
 </div>
 
 
-CPM-Bee是一个完全开源、允许商用的百亿参数中英文基座模型，也是CPM-live训练的第二个里程碑。它采用Transformer自回归架构（auto-regressive），在超过3万亿高质量语料（3 trillion tokens）上进行预训练，拥有强大的基础能力。
+CPM-Bee是一个完全开源、允许商用的百亿参数中英文基座模型，也是[CPM-live](https://live.openbmb.org/)训练的第二个里程碑。它采用Transformer自回归架构（auto-regressive），在超过3万亿高质量语料（3 trillion tokens）上进行预训练，拥有强大的基础能力。
 
-- 开源可商用：OpenBMB始终秉承“让大模型飞入千家万户”的开源精神，CPM-Bee基座模型将完全开源并且可商用，以推动大模型领域的发展。
-- 中英双语性能优异：CPM-Bee基座模型在预训练语料上进行了严格的筛选和配比，同时在中英双语上具有亮眼表现，具体可参见评测任务和结果。
-- 超大规模高质量语料：CPM-Bee基座模型在超过3万亿语料（3 trillion tokens）进行训练，是开源社区内经过语料最多的模型之一。同时，我们对预训练语料进行了严格的筛选、清洗和后处理以确保质量。
-- OpenBMB大模型系统生态支持：OpenBMB大模型系统在高性能预训练、适配、压缩、部署、工具开发了一系列工具，CPM-Bee基座模型将配套所有的工具脚本，高效支持开发者进行进阶使用。
-- 强大的对话和工具使用能力：结合OpenBMB在指令微调和工具学习的探索，我们在CPM-Bee基座模型的基础上进行微调，训练出了具有强大对话和工具使用能力的实例模型，API和内测将于近期开放。
+- **开源可商用**：OpenBMB始终秉承“让大模型飞入千家万户”的开源精神，CPM-Bee基座模型将完全开源并且可商用，以推动大模型领域的发展。
+- **中英双语性能优异**： CPM-Bee基座模型在预训练语料上进行了严格的筛选和配比，同时在中英双语上具有亮眼表现，具体可参见评测任务和结果。
+- **超大规模高质量语料**： CPM-Bee基座模型在超过3万亿语料（3 trillion tokens）进行训练，是开源社区内经过语料最多的模型之一。同时，我们对预训练语料进行了严格的筛选、清洗和后处理以确保质量。
+- **OpenBMB大模型系统生态支持**： OpenBMB大模型系统在高性能预训练、适配、压缩、部署、工具开发了一系列工具，CPM-Bee基座模型将配套所有的工具脚本，高效支持开发者进行进阶使用。
+- **强大的对话和工具使用能力**： 结合OpenBMB在指令微调和工具学习的探索，我们在CPM-Bee基座模型的基础上进行微调，训练出了具有强大对话和工具使用能力的实例模型，API和内测将于近期开放。
 
 ## 模型
 
@@ -39,10 +38,13 @@ CPM-Bee是一个完全开源、允许商用的百亿参数中英文基座模型�
 "选择题": {"input": "父母都希望自己的孩子诚实、勇敢、有礼貌。要想让孩子成为这样的人，父母首先得从自己做起，要是连自己都做不到，又怎能要求孩子做到呢？", "options": {"<option_0>": "少提要求", "<option_1>": "降低标准", "<option_2>": "自己先做好", "<option_3>": "让孩子拿主意"}, "question": "教育孩子时，父母应该：", "<ans>": ""}
 ```
 
-## CPM-Bee + OpenBMB
+## OpenBMB
 
 基于OpenBMB的大模型系统生态，我们在训练CPM-Bee的过程中实现了全流程高效。同时提供了继续训练（基于BMTrain）、微调（基于OpenPrompt和OpenDelta）、工具使用（基于BMTools）、模型压缩（基于BMCook）、高效推理（基于BMInf）的全套脚本，可以协助开发者快速上手和使用CPM-Bee。
 
+### 预训练
+
+我们提供了基于[BMTrain]([https://github.com/OpenBMB/BMTrain](https://github.com/OpenBMB/BMTrain))加速的预训练[脚本](https://github.com/OpenBMB/CPM-Bee/blob/main/src/pretrain_cpm_bee.py)，大幅提升预训练效率。
 
 ### 模型微调
 
@@ -102,9 +104,10 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 | **Mengzi-T5-MT**  | 68.93       | 86.99      | 55.19      | 74.73        | 22.42      | 74.69     | 77.6      | 85.1      | 84.17        |
 | **CPM-Bee**       | 88.05       | 56.85      | **79.93**  | 58.85        | **81.28**  | 86.4      | **93.25** | **85.33** | **88.62**    |
 
-
-
 #### 英文评测
+
+
+
 
 
 

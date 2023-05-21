@@ -8,7 +8,7 @@
 <p align="center">
   <a href="#模型">模型</a> •
   <a href="#OpenBMB">OpenBMB体系</a> •
-  <a href="#性能表现">性能表现</a> •
+  <a href="#性能表现">性能表现</a> 
 
 </p>
 
@@ -22,6 +22,22 @@ CPM-Bee是一个完全开源、允许商用的百亿参数中英文基座模型�
 - **超大规模高质量语料**： CPM-Bee基座模型在超过3万亿语料（3 trillion tokens）进行训练，是开源社区内经过语料最多的模型之一。同时，我们对预训练语料进行了严格的筛选、清洗和后处理以确保质量。
 - **OpenBMB大模型系统生态支持**： OpenBMB大模型系统在高性能预训练、适配、压缩、部署、工具开发了一系列工具，CPM-Bee基座模型将配套所有的工具脚本，高效支持开发者进行进阶使用。
 - **强大的对话和工具使用能力**： 结合OpenBMB在指令微调和工具学习的探索，我们在CPM-Bee基座模型的基础上进行微调，训练出了具有强大对话和工具使用能力的实例模型，API和内测将于近期开放。
+
+## 安装
+您需要克隆该仓库：
+```bash
+$ git clone -b master --single-branch https://github.com/OpenBMB/CPM-Bee.git
+```
+并确保您的环境符合要求：
+```bsh
+- python>=3.7
+- torch>=1.10
+```
+我们建议使用Anaconda管理环境并从PyPI安装其他依赖项：
+```bash
+$ cd CPM-Bee/cpm-live
+$ pip install -r requirements.txt
+```
 
 ## 模型
 
@@ -62,6 +78,39 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 --use-delta \
 ```
 
+#### 任务流程
+要在特定任务上微调模型，您应该准备数据集并按如下方式执行：
+1. 重新调整数据格式。
+您可以将分类问题集成到选择题的格式中。有关数据格式的更多信息，您可以查看CPM-Bee数据格式
+2. 将数据集预处理为二进制文件。
+要构建预处理数据集，您可以运行
+```bash
+$ python preprocess_dataset.py --input your/reformated/data/path --output_path your/binary/data/path --output_name data_name
+预处理后，您将获得：
+|-- your/binary/data/path
+    |-- folder1
+    |    |-- data_name
+    |    |-- meta.bin
+    |-- folder2
+         |-- data_name
+         |-- meta.bin
+```
+3. 微调CPM-Bee
+要开始微调，您可以运行：
+``` bash
+$ bash scripts/finetune_cpm_bee.sh
+```
+或者您可以直接通过torchrun运行finetune_cpm_bee.py。例如，您可以在具有4块GPU的服务器上对CPM-Bee进行微调，如下所示：
+```bash
+torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=localhost:12345 finetune_cpm_bee.py \
+--model-config your/model/config/path \
+--load your/model/checkpoint/path \
+--dataset your/binary/data/path/folder1 \
+--eval_dataset your/binary/data/path/folder2 \
+--use-delta 
+```
+
+
 ### 模型压缩
 
 基于[BMCook]([OpenBMB/BMCook: Model Compression for Big Models (github.com)](https://github.com/OpenBMB/BMCook))，我们对原始的CPM-Bee基座模型进行压缩，提供了多种大小的CPM-Bee模型来适应各种不同的场景。
@@ -86,6 +135,52 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 | CPM-Bee-2B  | 6.7 GB | GTX 1080（8 GB） |
 | CPM-Bee-1B  | 4.1 GB | GTX 1660（6 GB） |
 
+对于具体的推理任务，您可以编写自己的推理代码。这里我们举一个简单的文本生成示例。
+```python
+from cpm_live.generation.bee import CPMBeeBeamSearch
+from cpm_live.models import CPMBeeTorch, CPMBeeConfig
+from cpm_live.tokenizers import CPMBeeTokenizer
+from opendelta import LoraModel
+import torch
+
+prepare your input data.
+data_list = [
+    {"input": "今天天气是真的<mask>", "prompt": "往后写一句话", "<ans>": {"<mask>": ""}},
+    {"input": "北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ","<ans>":{"<mask_0>":"","<mask_1>":"","<mask_2>":"","<mask_3>":""}},
+]
+
+# load model
+config = CPMBeeConfig.from_json_file("cpm-bee-5b.json")
+ckpt_path = "cpm-bee-5b-ckpt.pt"
+tokenizer = CPMBeeTokenizer()
+model = CPMBeeTorch(config=config)
+
+# insert LoRA
+# delta_model = LoraModel(backbone_model=model, modified_modules=["project_q", "project_v"], backend="hf")
+
+# load checkpoints
+model.load_state_dict(torch.load(ckpt_path))
+model.cuda()
+
+# use beam search
+beam_search = CPMBeeBeamSearch(
+    model=model,
+    tokenizer=tokenizer,
+)
+for data in data_list:
+    inference_results = beam_search.generate([data], max_length=100)
+    for res in inference_results:
+        print(res)
+# output:
+# {'input': '今天天气是真的<mask>', 'prompt': '往后写一句话', '<ans>': {'<mask>': '好啊！'}}
+# {'input': '北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ', '<ans>': {'<mask_0>': '防风', '<mask_1>': '沙尘天气', '<mask_2>': '较高', '<mask_3>': '口罩'}}
+```
+
+我们还将上面的代码集成到一个python文件`text_generation.py`中，为了便于推断，可以直接运行该文件：
+```bash
+python text_generation.py
+```
+您可以设置不同的输入格式，以适应不同的推理任务。
 
 
 ## 性能表现
@@ -108,12 +203,23 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 
 
 
-
-
-
 ## CPM-Bee+ Decoder Tuning
 
-使用和OpenBMB和THUNLP联合自研的Decoder Tuning（ACL 2023）技术，可以仅仅使用API的情况下，不访问和修改模型参数即可大幅提高下游任务的性能。
+使用和OpenBMB和THUNLP联合自研的[Decoder Tuning](https://arxiv.org/abs/2212.08408)（ACL 2023）技术，可以仅仅使用API的情况下，不访问和修改模型参数即可大幅提高下游任务的性能。
 
 
+
+| **样本数** |     **模型**     |  **SST2** |  **IMDB** |  **Yelp** | **AGNews** | **DBpedia** | **Yahoo** |  **RTE**  |  **SNLI** | **MNLI-m** | **MNLI-mm** | **FewNERD** |  **Avg.** |
+|----|-------------|-----|-----|-----|------|-------|-----|-----|-----|------|-------|-------|-----|
+|   0   |    CPM-Bee    | 80.5  | 89.1  | 96.6  |  74.6  |  71.3   | 46.7  | 84.1  | 45.4  |  45.6  |  45.6   |   1.6   | 61.9  |
+|  16  |     T5-3B     | 89.9  | 92.7  | 94.9  |  87.7  |  96.2   | 66.5  | 55.8  | 52.0  |  52.8  |  52.2   |  51.9   | 72.1  |
+|      |    LLaMA-7B   | 85.1  | 90.5  | 92.8  |  71.4  |  89.8   | 45.1  | 49.1  | 35.2  |  36.3  |  36.2   |  54.6   | 62.4  |
+|      |   Vicuna-13B  | 82.1  | 88.8  | 95.6  |  86.4  |  74.4   | 55.3  | 62.5  | 61.4  |  54.3  |  48.6   |  52.1   | 69.2  |
+|      |    CPM-Bee    | 92.7  | 96.2  | 97.5  |  85.5  |  89.8   | 65.2  | 86.0  | 86.4  |  76.3  |  76.3   |  54.6   | **82.4**  |
+|  64  |    LLaMA-7B   | 87.5  | 85.7  | 96.9  |  75.4  |  93.5   | 47.4  | 51.4  | 39.4  |  36.2  |  38.4   |  59.8   | 64.7  |
+|      |   Vicuna-13B  | 92.0  | 90.8  | 96.5  |  87.7  |  87.8   | 58.7  | 59.1  | 58.7  |  56.7  |  48.4   |  56.8   | 72.1  |
+|      |    CPM-Bee    | 94.3  | 96.5  | 98.3  |  88.5  |  93.5   | 68.7  | 87.1  | 88.9  |  78.0  |  79.0   |  59.8   | **84.8**  |
+|  256 |    LLaMA-7B   | 87.6  | 88.8  | 97.1  |  82.4  |  94.2   | 48.5  | 53.4  | 39.8  |  37.3  |  37.4   |  59.1   | 66.0  |
+|      |   Vicuna-13B  | 93.1  | 88.7  | 96.8  |  89.9  |  89.1   | 58.6  | 58.5  | 58.7  |  57.5  |  48.3   |  56.6   | 72.3  |
+|      |    CPM-Bee    | 94.5  | 96.7  | 98.4  |  89.7  |  94.2   | 69.9  | 87.7  | 89.4  |  81.7  |  80.6   |  59.1   | **85.6**  |
 

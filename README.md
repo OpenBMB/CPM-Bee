@@ -34,6 +34,8 @@
 
 - **🔨 对话和工具使用能力**： 结合OpenBMB在指令微调和工具学习的探索，我们在CPM-Bee基座模型的基础上进行微调，训练出了具有强大对话和工具使用能力的实例模型，API和内测将于近期开放。
 
+*Read this in [English](https://github.com/OpenBMB/CPM-Bee/blob/main/README_en.md).*
+
 ## 🚀 安装和使用
 您需要克隆该仓库：
 ```bash

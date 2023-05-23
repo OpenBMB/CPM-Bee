@@ -215,7 +215,7 @@ python text_generation.py
 ### CPM-Bee+ Decoder Tuning
 
 使用和OpenBMB和THUNLP联合自研的[Decoder Tuning](https://arxiv.org/abs/2212.08408)（将发表于ACL 2023）技术，可以仅仅使用API的情况下，不访问和修改模型参数即可大幅提高下游任务的性能。
-
+实现代码[链接](https://github.com/thunlp/DecT)。
 
 
 | **样本数** |     **模型**     |  **SST2** |  **IMDB** |  **Yelp** | **AGNews** | **DBpedia** | **Yahoo** |  **RTE**  |  **SNLI** | **MNLI-m** | **MNLI-mm** | **FewNERD** |  **Avg.** |

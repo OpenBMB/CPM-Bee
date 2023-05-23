@@ -33,6 +33,8 @@
 *Read this in [English](https://github.com/OpenBMB/CPM-Bee/blob/main/README_en.md).*
 
 ## 🚀 安装和使用
+
+### 环境安装
 您需要克隆该仓库：
 ```bash
 $ git clone -b master --single-branch https://github.com/OpenBMB/CPM-Bee.git
@@ -42,17 +44,37 @@ $ git clone -b master --single-branch https://github.com/OpenBMB/CPM-Bee.git
 - python>=3.7
 - torch>=1.10
 ```
-我们建议使用Anaconda管理环境并从PyPI安装其他依赖项：
+我们建议使用Anaconda管理环境并从PyPI安装CPM-Bee以及其他依赖项：
 ```bash
 $ cd src
 $ pip install -r requirements.txt
+$ python setup.py install
+```
+其中`bmtrain`是CPM-Bee的关键依赖，如果您在安装`bmtrain`时遇到困难，可以参考[BMTrain]([https://github.com/OpenBMB/BMTrain](https://github.com/OpenBMB/BMTrain))，选择配置合适的torch与CUDA版本。
+
+### 文件准备
+为了便于您快速熟悉CPM-Bee模型的使用，我们建议您先准备好模型配置文件以及参数文件。
+配置文件在仓库的[`src/config/cpm-bee-10b.json`](https://github.com/OpenBMB/CPM-Bee/blob/main/src/config/cpm-bee-10b.json)路径下，至于参数文件，您可以从[这里](10b模型下载链接)下载。
+### 快速调用
+在准备好配置文件和参数文件后，您可以参考如下代码，快速使用CPM-Bee模型：
+```python
+>>> import torch
+>>> from cpm_live.models import CPMBeeTorch, CPMBeeConfig
+>>> from cpm_live.tokenizers import CPMBeeTokenizer
+>>> from cpm_live.generation.bee import CPMBeeBeamSearch
+>>> tokenizer = CPMBeeTokenizer()
+>>> model = CPMBeeTorch(CPMBeeConfig.from_json_file("/your/config"))
+>>> model.load_state_dict(torch.load("/your/model/checkpoint"))
+>>> model.cuda()
+>>> inputs = {"input": "今天天气真好，<mask>", "<ans>": ""}
+>>> beam_search = CPMBeeBeamSearch(model=model, tokenizer=tokenizer)
+>>> inference_results = beam_search.generate([inputs], max_length=100)
+>>> print(inference_results[0]["<ans>"])
+心情也很好
 ```
 
-#### 模型
-
-模型权重下载链接
-
-- CPM-Bee的基座模型可以准确地进行语义理解，高效完成各类基础任务，包括：文字填空、文本生成、翻译、问答、评分预测、文本选择题等等。
+### 扩展任务
+- CPM-Bee的基座模型可以准确地进行语义理解，高效完成各类基础任务，包括：文字填空、文本生成、翻译、问答、评分预测、文本选择题等等。如果您希望使用基座模型完成上述任务，仅需修改输入数据的格式即可。下面给出了每种任务所需要的数据格式，您可以参考这些格式，扩展相应的任务。
 
 ```json
 "填空":{"input": "心理学领域的研究人员发现，做出重要决定的最好方法之一，比如选择一所大学或<mask_0>，都涉及到使用决策工作表。研究优化的心理学家将<mask_1>与理论理想决策进行比较，看看它们有多相似。工作表程序的支持者认为它会产生最优的，也就是说，最好的决策。虽然有<mask_2>可以接受，但它们在本质上都是相似的。","<ans>":{"<mask_0>":"","<mask_1>":"","<mask_2>":""}},
@@ -62,6 +84,55 @@ $ pip install -r requirements.txt
 "评分预测": {"input":"之前多次聚餐都选择这里，有各种大小的包房同时能容纳很多人，环境好有特色还有表演，整体聚餐氛围一下被带动起来。现在由于炭火改成了电烤羊，口感真的不如从前，不过其他菜品都还是不错，烤羊剩下的拆骨肉最后还能再加工一下椒盐的也很好吃。","question":"评分是多少？(1-5)","<ans>":""},
 "选择题": {"input": "父母都希望自己的孩子诚实、勇敢、有礼貌。要想让孩子成为这样的人，父母首先得从自己做起，要是连自己都做不到，又怎能要求孩子做到呢？", "options": {"<option_0>": "少提要求", "<option_1>": "降低标准", "<option_2>": "自己先做好", "<option_3>": "让孩子拿主意"}, "question": "教育孩子时，父母应该：", "<ans>": ""}
 ```
+如果执行翻译任务：
+```shell
+>>> inputs = {"input": "北京是中国的首都", "prompt": "中翻英", "<ans>": ""}
+>>> results = beam_search.generate([inputs], max_length=100)
+>>> print(results[0]["<ans>"])
+Beijing is the capital of China
+```
+
+### 微调流程
+如果您不满足于推理测试，要在特定任务上微调模型，您应该准备数据集并按如下方式执行：
+- 重新调整数据格式。
+您可以将分类问题集成到选择题的格式中。有关数据格式的更多信息，您可以查看[CPM-Bee数据格式](#扩展任务)。假设您准备好的数据如下：
+```bash
+|-- your/reformated/data/path
+    | -- train.json
+    | -- eval.json
+```
+- 将数据集预处理为二进制文件。
+
+要构建数据集，您可以运行
+```bash
+$ python preprocess_dataset.py --input your/reformated/data/path --output_path your/binary/data/path --output_name data_name
+```
+
+处理后，您将获得数据如下：
+```
+|-- your/binary/data/path
+    |-- train
+    |    |-- data_name
+    |    |-- meta.bin
+    |-- eval
+         |-- data_name
+         |-- meta.bin
+```
+- 微调CPM-Bee
+要开始微调，您可以运行：
+``` bash
+$ bash scripts/finetune_cpm_bee.sh
+```
+或者您可以直接通过`torchrun`运行`finetune_cpm_bee.py`。例如，您可以在具有4块GPU的服务器上对CPM-Bee进行微调，如下所示：
+```bash
+torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=localhost:12345 finetune_cpm_bee.py \
+--model-config your/model/config/path \
+--load your/model/checkpoint/path \
+--dataset your/binary/data/path/train \
+--eval_dataset your/binary/data/path/eval \
+--use-delta 
+```
+我们在finetune_cpm_bee.py里提供了`eval-interval`, `early-stop-patience`等参数，您可以根据您的数据集特点，选择合适的参数配置。
 
 ## <img src="https://i.imgloc.com/2023/05/21/V4nLS3.png" width="25px"> OpenBMB
 
@@ -85,40 +156,6 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=localhost:12345 finetune_cpm_bee.py \
 --use-delta \
 ```
-
-#### 任务流程
-要在特定任务上微调模型，您应该准备数据集并按如下方式执行：
-- 重新调整数据格式。
-您可以将分类问题集成到选择题的格式中。有关数据格式的更多信息，您可以查看CPM-Bee数据格式
-- 将数据集预处理为二进制文件。
-要构建预处理数据集，您可以运行
-
-```bash
-$ python preprocess_dataset.py --input your/reformated/data/path --output_path your/binary/data/path --output_name data_name
-预处理后，您将获得：
-|-- your/binary/data/path
-    |-- folder1
-    |    |-- data_name
-    |    |-- meta.bin
-    |-- folder2
-         |-- data_name
-         |-- meta.bin
-```
-- 微调CPM-Bee
-要开始微调，您可以运行：
-``` bash
-$ bash scripts/finetune_cpm_bee.sh
-```
-或者您可以直接通过torchrun运行finetune_cpm_bee.py。例如，您可以在具有4块GPU的服务器上对CPM-Bee进行微调，如下所示：
-```bash
-torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=localhost:12345 finetune_cpm_bee.py \
---model-config your/model/config/path \
---load your/model/checkpoint/path \
---dataset your/binary/data/path/folder1 \
---eval_dataset your/binary/data/path/folder2 \
---use-delta 
-```
-
 
 ### 模型压缩
 
@@ -144,7 +181,7 @@ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_en
 | CPM-Bee-2B  | 6.7 GB | GTX 1080（8 GB） |
 | CPM-Bee-1B  | 4.1 GB | GTX 1660（6 GB） |
 
-对于具体的推理任务，您可以编写自己的推理代码。这里我们举一个简单的文本生成示例。
+我们提供了BeamSearch功能来支持具体的推理任务。这里我们举一个简单的文本生成示例，在[快速调用示例](#快速调用)的基础上，添加了对微调后模型的推理支持。
 ```python
 from cpm_live.generation.bee import CPMBeeBeamSearch
 from cpm_live.models import CPMBeeTorch, CPMBeeConfig
@@ -152,7 +189,7 @@ from cpm_live.tokenizers import CPMBeeTokenizer
 from opendelta import LoraModel
 import torch
 
-prepare your input data.
+# prepare your input data.
 data_list = [
     {"input": "今天天气是真的<mask>", "prompt": "往后写一句话", "<ans>": {"<mask>": ""}},
     {"input": "北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ","<ans>":{"<mask_0>":"","<mask_1>":"","<mask_2>":"","<mask_3>":""}},
@@ -164,7 +201,7 @@ ckpt_path = "cpm-bee-5b-ckpt.pt"
 tokenizer = CPMBeeTokenizer()
 model = CPMBeeTorch(config=config)
 
-# insert LoRA
+# insert LoRA if your model has been finetuned in delta-tuning.
 # delta_model = LoraModel(backbone_model=model, modified_modules=["project_q", "project_v"], backend="hf")
 
 # load checkpoints
@@ -181,8 +218,8 @@ for data in data_list:
     for res in inference_results:
         print(res)
 # output:
-# {'input': '今天天气是真的<mask>', 'prompt': '往后写一句话', '<ans>': {'<mask>': '好啊！'}}
-# {'input': '北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ', '<ans>': {'<mask_0>': '防风', '<mask_1>': '沙尘天气', '<mask_2>': '较高', '<mask_3>': '口罩'}}
+# {'input': '今天天气是真的<mask>', 'prompt': '往后写一句话', '<ans>': {'<mask>': '好，阳光明媚，心情也跟着好起来了。'}}
+# {'input': '北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ', '<ans>': {'<mask_0>': '交通安全', '<mask_1>': '沙尘天气', '<mask_2>': '较高', '<mask_3>': '口罩、手套等防护用品'}}
 ```
 
 我们还将上面的代码集成到一个python文件`text_generation.py`中，为了便于推断，可以直接运行该文件：

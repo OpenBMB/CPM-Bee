@@ -37,6 +37,7 @@ Utilizing the Transformer auto-regressive architecture, CPM-Bee has been pre-tra
 
 ## 🚀 Setup and Use
 
+### Environment Setup
 Clone the CPM-Bee repository：
 ```bash
 $ git clone -b master --single-branch https://github.com/OpenBMB/CPM-Bee.git
@@ -47,26 +48,95 @@ Please ensure the environment to meet the following requirements:
 - torch>=1.10
 ```
 
-We recommend using Anaconda to manage your environment and installing other dependencies from PyPI:
+We recommend using Anaconda to manage your environment and install CPM-Bee and other dependencies from PyPI:
 ```bash
 $ cd src
 $ pip install -r requirements.txt
+$ python setup.py install
+```
+`bmtrain` is the key dependency of CPM-Bee. If you meet some difficulties when installing `bmtrain`, you can refer to [BMTrain]([https://github.com/OpenBMB/BMTrain](https://github.com/OpenBMB/BMTrain)) and choose appropriate version of torch and CUDA.
+
+### File Preparation
+In order to quickly familiarize you with the CPM-Bee model, we suggest that you prepare the model configuration file and parameter file first. You can find configuration file in [`src/config/cpm-bee-10b.json`](https://github.com/OpenBMB/CPM-Bee/blob/main/src/config/cpm-bee-10b.json), and download parameter file [here](10b Model Link)
+
+### Quick Use
+After preparing the configuration file and parameter file, you can refer to the following code to quickly use the CPM-Bee model:
+```python
+>>> import torch
+>>> from cpm_live.models import CPMBeeTorch, CPMBeeConfig
+>>> from cpm_live.tokenizers import CPMBeeTokenizer
+>>> from cpm_live.generation.bee import CPMBeeBeamSearch
+>>> tokenizer = CPMBeeTokenizer()
+>>> model = CPMBeeTorch(CPMBeeConfig.from_json_file("/your/config"))
+>>> model.load_state_dict(torch.load("/your/model/checkpoint"))
+>>> model.cuda()
+>>> inputs = {"input": "今天天气真好，<mask>", "<ans>": ""}
+>>> beam_search = CPMBeeBeamSearch(model=model, tokenizer=tokenizer)
+>>> inference_results = beam_search.generate([inputs], max_length=100)
+>>> print(inference_results[0]["<ans>"])
+心情也很好
 ```
 
-#### 模型
-
-Model Link
-
+### Extend Task
 - The CPM-Bee base model excels at accurate semantic understanding and efficiently handles various fundamental tasks, including text completion, text generation, translation, question answering, sentiment analysis, multiple-choice questions, and more.
 
 ```json
-"填空":{"input": "心理学领域的研究人员发现，做出重要决定的最好方法之一，比如选择一所大学或<mask_0>，都涉及到使用决策工作表。研究优化的心理学家将<mask_1>与理论理想决策进行比较，看看它们有多相似。工作表程序的支持者认为它会产生最优的，也就是说，最好的决策。虽然有<mask_2>可以接受，但它们在本质上都是相似的。","<ans>":{"<mask_0>":"","<mask_1>":"","<mask_2>":""}},
-"文本生成": {"input": "今天天气很好，我和妈妈一起去公园，<mask>", "prompt": "往后写两句话", "<ans>": ""}
-"翻译": {"input": "北京是中国的首都", "prompt": "中翻英", "<ans>": ""}
-"问答": {"input": "NGC 6231是一个位于天蝎座的疏散星团，天球座标为赤经16时54分，赤纬-41度48分，视觉观测大小约45角分，亮度约2.6视星等，距地球5900光年。NGC 6231年龄约为三百二十万年，是一个非常年轻的星团，星团内的最亮星是5等的天蝎座 ζ1星。用双筒望远镜或小型望远镜就能看到个别的行星。NGC 6231在1654年被意大利天文学家乔瓦尼·巴蒂斯特·霍迪尔纳（Giovanni Battista Hodierna）以Luminosae的名字首次纪录在星表中，但是未见记载于夏尔·梅西耶的天体列表和威廉·赫歇尔的深空天体目录。这个天体在1678年被爱德蒙·哈雷（I.7）、1745年被夏西亚科斯（Jean-Phillippe Loys de Cheseaux）（9）、1751年被尼可拉·路易·拉卡伊（II.13）分别再次独立发现。", "question": "NGC 6231的经纬度是多少？", "<ans>": ""}
-"评分预测": {"input":"之前多次聚餐都选择这里，有各种大小的包房同时能容纳很多人，环境好有特色还有表演，整体聚餐氛围一下被带动起来。现在由于炭火改成了电烤羊，口感真的不如从前，不过其他菜品都还是不错，烤羊剩下的拆骨肉最后还能再加工一下椒盐的也很好吃。","question":"评分是多少？(1-5)","<ans>":""},
-"选择题": {"input": "父母都希望自己的孩子诚实、勇敢、有礼貌。要想让孩子成为这样的人，父母首先得从自己做起，要是连自己都做不到，又怎能要求孩子做到呢？", "options": {"<option_0>": "少提要求", "<option_1>": "降低标准", "<option_2>": "自己先做好", "<option_3>": "让孩子拿主意"}, "question": "教育孩子时，父母应该：", "<ans>": ""}
+"Blank Filling":{"input": "Researchers in the field of psychology have found that one of the best ways to make an important decision, such as choosing a university to attend or <mask_0>, involves the utilization of a decision worksheet. Psychologists who study optimization compare <mask_1> to theoretical ideal decisions to see how similar they are. Proponents of the worksheet procedure believe that it will yield optimal, that is, the best decisions. Although there are <mask_2> can take, they are all similar in their essential aspects.", "<ans>":{"<mask_0>": "", "<mask_1>": "", "<mask_2>": ""}},
+"Text Generation": {"input": "It was a fine day today. I went to the park with my mother. <mask>", "prompt": "write two sentences in the end", "<ans>":{"<mask>": ""}},
+"Translation": {"input": "Beijing is the capital of China.", "prompt": "translate to Chinese", "<ans>":""},
+"QA": {"input": "NGC 6231 is an open cluster located in the Scorpius constellation at the celestial coordinates of 1654 minutes right longitude, declination of -41 degrees 48 minutes, visual size of about 45 Angle minutes, brightness of about 2.6 apparent magnitude, 5900 light-years from Earth. NGC 6231 is about 3.2 million years old and is a very young cluster. The brightest star in the cluster is Zeta 1 of magnitude 5. Individual planets can be seen with binoculars or a small telescope. NGC 6231 was first recorded in 1654 by Italian astronomer Giovanni Battista Hodierna under the name Luminosae, but was not recorded in Charles Messier's list of objects or William Herschel's catalogue of Deep Sky Objects. This object was independently discovered again by Edmond Halley (I.7) in 1678, by Jean-Phillippe Loys de Cheseaux (9) in 1745, and by Nicolas Louie Lacay (I.13) in 1751.", "question": "What is the latitude of NGC 6231?", "<ans>": ""},
+"Score": {"input": "Before many meals have chosen here, there are various sizes of private rooms can accommodate a lot of people at the same time, the environment is good with features and performances, the overall dining atmosphere is driven up. Now because of the charcoal fire to electric roast sheep, the taste is not as good as before, but other dishes are still good, the lamb leftover bone can be processed with salt and pepper at the end is also very delicious.", "question": "What's the score?(1-5)", "<ans>": ""},
+"Choice": {"input": "Parents want their children to be honest, brave and polite. If you want your child to become such a person, parents first have to start from themselves, if they can't do it, how can they ask their children to do it?", "options": {"<option_0>": "make fewer demands", "<option_1>": "lower the standard", "<option_2>": "do it yourself first", "<option_3>": "let the child decide"}, "question": "When teaching children, parents should", "<ans>": ""}
 ```
+If you perform a translation task:
+```shell
+>>> inputs = {"input": "北京是中国的首都", "prompt": "中翻英", "<ans>": ""}
+>>> results = beam_search.generate([inputs], max_length=100)
+>>> print(results[0]["<ans>"])
+Beijing is the capital of China
+```
+
+### Fine-tuing Procedure
+If you are not satisfied with inference tests and want to fine-tune the model on a particular task, you should prepare the data set and do so as follows：
+- Reformat Data
+You can integrate classification questions into the format of multiple choice questions. For more information about the data format, you can see [CPM-Bee DataFormat](#extend-task). Suppose you have the following data:
+```bash
+|-- your/reformated/data/path
+    | -- train.json
+    | -- eval.json
+```
+- Process the dataset to binary file。
+
+To build dataset, you can run
+```bash
+$ python preprocess_dataset.py --input your/reformated/data/path --output_path your/binary/data/path --output_name data_name
+```
+
+After process，you can obtain the data as follows：
+```
+|-- your/binary/data/path
+    |-- train
+    |    |-- data_name
+    |    |-- meta.bin
+    |-- eval
+         |-- data_name
+         |-- meta.bin
+```
+- Fine-tune CPM-Bee
+To begin fine-tuning, you can run：
+``` bash
+$ bash scripts/finetune_cpm_bee.sh
+```
+Or you can run `finetune_cpm_bee.py` directly from `torchrun`. For example, you can fine-tune CPM-Bee on a server with 4 Gpus, as shown below
+```bash
+torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=localhost:12345 finetune_cpm_bee.py \
+--model-config your/model/config/path \
+--load your/model/checkpoint/path \
+--dataset your/binary/data/path/train \
+--eval_dataset your/binary/data/path/eval \
+--use-delta 
+```
+We provide the arguments like `eval-interval`, `early-stop-patience`，by which you can choose appropriate arguments configuration according to your own dataset.
 
 ## <img src="https://i.imgloc.com/2023/05/21/V4nLS3.png" width="25px"> OpenBMB
 
@@ -76,11 +146,9 @@ Leveraging the ecosystem of the OpenBMB large model system, we have implemented 
 
 We provide a pre-training [script](https://github.com/OpenBMB/CPM-Bee/blob/main/src/pretrain_cpm_bee.py) based on [BMTrain](https://github.com/OpenBMB/BMTrain) to improve the efficiency of training.
 
-
 ### Fine-tuning
 
 Based on [OpenDelta](https://github.com/thunlp/OpenDelta), we provide two solutions of model tuning: full-parameter fine-tuning and parameter-efficient delta tuning, which could adapt CPM-Bee to various of scenarios.
-
 
 1. Full-parameter fine-tuning:
 ```bash
@@ -92,47 +160,6 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=localhost:12345 finetune_cpm_bee.py \
 --use-delta \
 ```
-
-#### Procedure
-
-
-To fine-tune the model on a specific task, you should prepare the dataset and follow the steps below:
-
-- Reshape the data format:
-
-If you have a classification problem, you can integrate it into the format of multiple-choice questions. For more information on data formatting, you can refer to the CPM-Bee data format guidelines.
-- Preprocess the dataset into binary files:
-
-To construct a preprocessed dataset, you can execute the necessary preprocessing steps.
-
-```bash
-$ python preprocess_dataset.py --input your/reformated/data/path --output_path your/binary/data/path --output_name data_name
-```
-After processing, you will obtain
-```bash
-|-- your/binary/data/path
-    |-- folder1
-    |    |-- data_name
-    |    |-- meta.bin
-    |-- folder2
-         |-- data_name
-         |-- meta.bin
-```
-
-- Fine-tune CPM-Bee, run
-``` bash
-$ bash scripts/finetune_cpm_bee.sh
-```
-Alternatively, you can directly run `finetune_cpm_bee.py` using `torchrun`. For example, you can fine-tune CPM-Bee on a server with 4 GPUs as shown below:
-```bash
-torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=localhost:12345 finetune_cpm_bee.py \
---model-config your/model/config/path \
---load your/model/checkpoint/path \
---dataset your/binary/data/path/folder1 \
---eval_dataset your/binary/data/path/folder2 \
---use-delta 
-```
-
 
 ### Model Compression
 
@@ -171,7 +198,7 @@ from cpm_live.tokenizers import CPMBeeTokenizer
 from opendelta import LoraModel
 import torch
 
-prepare your input data.
+# prepare your input data.
 data_list = [
     {"input": "今天天气是真的<mask>", "prompt": "往后写一句话", "<ans>": {"<mask>": ""}},
     {"input": "北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ","<ans>":{"<mask_0>":"","<mask_1>":"","<mask_2>":"","<mask_3>":""}},
@@ -183,7 +210,7 @@ ckpt_path = "cpm-bee-5b-ckpt.pt"
 tokenizer = CPMBeeTokenizer()
 model = CPMBeeTorch(config=config)
 
-# insert LoRA
+# insert LoRA if your model has been finetuned in delta-tuning.
 # delta_model = LoraModel(backbone_model=model, modified_modules=["project_q", "project_v"], backend="hf")
 
 # load checkpoints
@@ -200,8 +227,8 @@ for data in data_list:
     for res in inference_results:
         print(res)
 # output:
-# {'input': '今天天气是真的<mask>', 'prompt': '往后写一句话', '<ans>': {'<mask>': '好啊！'}}
-# {'input': '北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ', '<ans>': {'<mask_0>': '防风', '<mask_1>': '沙尘天气', '<mask_2>': '较高', '<mask_3>': '口罩'}}
+# {'input': '今天天气是真的<mask>', 'prompt': '往后写一句话', '<ans>': {'<mask>': '好，阳光明媚，心情也跟着好起来了。'}}
+# {'input': '北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ', '<ans>': {'<mask_0>': '交通安全', '<mask_1>': '沙尘天气', '<mask_2>': '较高', '<mask_3>': '口罩、手套等防护用品'}}
 ```
 
 We integrate the above code to a python file `text_generation.py`, which could be directly executed:

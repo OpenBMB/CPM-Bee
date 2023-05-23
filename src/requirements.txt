@@ -5,3 +5,4 @@ tqdm
 tensorboard
 numpy>=1.21.0
 spacy
+opendelta

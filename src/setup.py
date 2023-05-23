@@ -15,6 +15,7 @@ setup(
         "tqdm",
         "tensorboard",
         "numpy>=1.21.0",
+        "opendelta",
     ],
     package_data={"cpm_live": ["vocabs/*.txt"]},
 )

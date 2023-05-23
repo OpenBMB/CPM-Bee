@@ -17,11 +17,11 @@
 
 ## ✨ 模型介绍
 
-**CPM-Bee**是一个完全开源、允许商用的百亿参数中英文基座模型，也是[**CPM-live**](https://live.openbmb.org/)训练的第二个里程碑。它采用Transformer自回归架构（auto-regressive），在超万亿（trillion）高质量语料上进行预训练，拥有强大的基础能力。
+**CPM-Bee**是一个完全开源、允许商用的百亿参数中英文基座模型，也是[**CPM-live**](https://live.openbmb.org/)训练的第二个里程碑。它采用Transformer自回归架构（auto-regressive），在超万亿（trillion）高质量语料上进行预训练，拥有强大的基础能力。开发者和研究者可以在CPM-Bee基座模型的基础上在各类场景进行适配来以创建特定领域的应用模型。
 
 - **👐 开源可商用**：OpenBMB始终秉承“让大模型飞入千家万户”的开源精神，CPM-Bee基座模型将完全开源并且可商用，以推动大模型领域的发展。
 
-- **💫 中英双语性能优异**： CPM-Bee基座模型在预训练语料上进行了严格的筛选和配比，同时在中英双语上具有亮眼表现，具体可参见评测任务和结果。
+- **💫 中英双语性能优异**： CPM-Bee基座模型在预训练语料上进行了严格的筛选和配比，同时在中英双语上具有亮眼表现，具体可参见[评测任务和结果](#零样本评测)。
 
 - **📖 超大规模高质量语料**： CPM-Bee基座模型在超过3万亿语料（3 trillion tokens）进行训练，是开源社区内经过语料最多的模型之一。同时，我们对预训练语料进行了严格的筛选、清洗和后处理以确保质量。
 
@@ -92,6 +92,7 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 您可以将分类问题集成到选择题的格式中。有关数据格式的更多信息，您可以查看CPM-Bee数据格式
 - 将数据集预处理为二进制文件。
 要构建预处理数据集，您可以运行
+
 ```bash
 $ python preprocess_dataset.py --input your/reformated/data/path --output_path your/binary/data/path --output_name data_name
 预处理后，您将获得：

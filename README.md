@@ -50,7 +50,7 @@ $ cd src
 $ pip install -r requirements.txt
 $ python setup.py install
 ```
-其中`bmtrain`是CPM-Bee的关键依赖，如果您在安装`bmtrain`时遇到困难，可以参考[BMTrain]([https://github.com/OpenBMB/BMTrain](https://github.com/OpenBMB/BMTrain))，选择配置合适的torch与CUDA版本。
+其中`bmtrain`是CPM-Bee的关键依赖，如果您在安装`bmtrain`时遇到困难，可以参考[BMTrain](https://github.com/OpenBMB/BMTrain)，选择配置合适的torch与CUDA版本。
 
 ### 文件准备
 为了便于您快速熟悉CPM-Bee模型的使用，我们建议您先准备好模型配置文件以及参数文件。
@@ -95,6 +95,7 @@ Beijing is the capital of China
 ### 微调流程
 如果您不满足于推理测试，要在特定任务上微调模型，您应该准备数据集并按如下方式执行：
 - 重新调整数据格式。
+
 您可以将分类问题集成到选择题的格式中。有关数据格式的更多信息，您可以查看[CPM-Bee数据格式](#扩展任务)。假设您准备好的数据如下：
 ```bash
 |-- your/reformated/data/path
@@ -119,6 +120,7 @@ $ python preprocess_dataset.py --input your/reformated/data/path --output_path y
          |-- meta.bin
 ```
 - 微调CPM-Bee
+
 要开始微调，您可以运行：
 ``` bash
 $ bash scripts/finetune_cpm_bee.sh

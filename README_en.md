@@ -54,7 +54,7 @@ $ cd src
 $ pip install -r requirements.txt
 $ python setup.py install
 ```
-`bmtrain` is the key dependency of CPM-Bee. If you meet some difficulties when installing `bmtrain`, you can refer to [BMTrain]([https://github.com/OpenBMB/BMTrain](https://github.com/OpenBMB/BMTrain)) and choose appropriate version of torch and CUDA.
+`bmtrain` is the key dependency of CPM-Bee. If you meet some difficulties when installing `bmtrain`, you can refer to [BMTrain](https://github.com/OpenBMB/BMTrain) and choose appropriate version of torch and CUDA.
 
 ### File Preparation
 In order to quickly familiarize you with the CPM-Bee model, we suggest that you prepare the model configuration file and parameter file first. You can find configuration file in [`src/config/cpm-bee-10b.json`](https://github.com/OpenBMB/CPM-Bee/blob/main/src/config/cpm-bee-10b.json), and download parameter file [here](10b Model Link)
@@ -99,6 +99,7 @@ Beijing is the capital of China
 ### Fine-tuing Procedure
 If you are not satisfied with inference tests and want to fine-tune the model on a particular task, you should prepare the data set and do so as follows：
 - Reformat Data
+
 You can integrate classification questions into the format of multiple choice questions. For more information about the data format, you can see [CPM-Bee DataFormat](#extend-task). Suppose you have the following data:
 ```bash
 |-- your/reformated/data/path
@@ -123,6 +124,7 @@ After process，you can obtain the data as follows：
          |-- meta.bin
 ```
 - Fine-tune CPM-Bee
+
 To begin fine-tuning, you can run：
 ``` bash
 $ bash scripts/finetune_cpm_bee.sh

@@ -28,7 +28,7 @@ Utilizing the Transformer auto-regressive architecture, CPM-Bee has been pre-tra
 - **💫 Excellent Performance in Chinese and English**： : CPM-Bee's base model has undergone rigorous selection and balancing of pre-training data, resulting in outstanding performance in both Chinese and English. For detailed information regarding evaluation tasks and results, please refer to the assessment documentation.
 
 
-- **📖 Vast and High-quality Corpus**： CPM-Bee, as a base model, has been trained on an extensive corpus of over 3 trillion tokens, making it one of the models with the highest volume of training data within the open-source community. Furthermore, we have implemented stringent selection, cleaning, and post-processing procedures on the pre-training corpus to ensure its quality.
+- **📖 Vast and High-quality Corpus**： CPM-Bee, as a base model, has been trained on an extensive corpus of over trillion tokens, making it one of the models with the highest volume of training data within the open-source community. Furthermore, we have implemented stringent selection, cleaning, and post-processing procedures on the pre-training corpus to ensure its quality.
 
 - **<img src="https://i.imgloc.com/2023/05/21/V4nLS3.png" width="20px"> Support for OpenBMB System**： The OpenBMB system provides a comprehensive ecosystem of tools and scripts for high-performance pre-training, adaptation, compression, deployment, and tool development. CPM-Bee, as a base model, is accompanied by all the necessary tool scripts, enabling developers to efficiently utilize and explore advanced functionalities.
 
@@ -248,26 +248,25 @@ We conducted comprehensive evaluations of the CPM-Bee base model's Chinese and E
 
 #### ZeroClue Chinese Evaluation
 
-| **模型**            | **EPRSTMT** | **CSLDCP** | **TNEWSF** | **IFLYTEKF** | **OCNLIF** | **BUSTM** | **CHIDF** | **CSLF**  | **CLUEWSCF** |
-| ----------------- | ----------- | ---------- | ---------- | ------------ | ---------- | --------- | --------- | --------- | ------------ |
-| **二郎神-UnifiedMC** | **88.71**   | 50.18      | 71.67      | 40.58        | 75.5       | 80.15     | 84.85     | 60.6      | 81.72        |
-| **PaddleNLP-UTC** | 85.92       | **58.92**  | 68.27      | 40.15        | 74.79      | 76.7      | 82.75     | 70.6      | 74.48        |
-| **天翼云**           | 87.25       | 48.02      | 77.13      | **59.62**    | 75.5       | **90.05** | 84.6      | 82.9      | 81.72        |
-| **Mengzi-T5-MT**  | 68.93       | 86.99      | 55.19      | 74.73        | 22.42      | 74.69     | 77.6      | 85.1      | 84.17        |
-| **CPM-Bee**       | 88.05       | 56.85      | **79.93**  | 58.85        | **81.28**  | 86.4      | **93.25** | **85.33** | **88.62**    |
+| **模型**         | **Score**| **EPRSTMT** | **CSLDCP** | **TNEWSF** | **IFLYTEKF** | **OCNLIF** | **BUSTM** | **CHIDF** | **CSLF**  | **CLUEWSCF** |
+| ---------------  | -------- |----------- | ---------- | ---------- | ------------ | ---------- | --------- | --------- | --------- | ------------ |
+| **CPM-Bee**         | 78.184    | 85.52   | 58.99  | 78.2       | 58.81        | 77.73      | 83.85     | 89.65     | 83.6      | 87.24        |
+| **Ctyun_Big_Model** | 76.217    | 87.25   | 48.02  | 77.13      | 59.62        | 75.5       | 90.05     | 84.6      | 82.9      | 81.72        |
+| **PaddleNLP-UTC**   | 70.547    | 85.92   | 58.92  | 68.27      | 40.15        | 74.79      | 76.7      | 82.75     | 70.6      | 74.48        |
+| **二郎神-UnifiedMC** | 70.295    | 88.71   | 50.18  | 71.67      | 40.58        | 75.5       | 80.15     | 84.85     | 60.6      | 81.72        |
+
 
 #### English Evaluation
 
-| **Model**           | **BoolQ** | **PIQA** | **SIQA** | **HellaSwag** | **WinoGrande** | **ARC-e** | **ARC-c** | **OBQA** |
-| ---------------- | --------- | -------- | -------- | ------------- | -------------- | --------- | --------- | -------- |
-| **GPT-3**        | 60.5      | 81       | -        | 78.9          | 70.2           | 68.8      | 51.4      | 57.6     |
-| **Gopher**       | 79.3      | 81.8     | 50.6     | 79.2          | 70.1           | -         | -         | -        |
-| **Chinchilla**   | 83.7      | 81.8     | 51.3     | 80.8          | 74.9           | -         | -         | -        |
-| **PaLM**         | 84.8      | 80.5     | -        | 79.7          | 77             | 75.2      | 52.5      | 50.4     |
-| **LLaMA-7B**     | 76.5      | 79.8     | 48.9     | 76.1          | 70.1           | 72.8      | 47.6      | 57.2     |
-| **LLaMA-13B**    | 78.1      | 80.1     | 50.4     | 79.2          | 73             | 74.8      | 52.7      | 56.4     |
-| **CPM-Bee-0527** | 78.69     | 77.58    | 61.11    | 78.89         | 61.88          | 66.88     | 54.18     | 63.20    |
-
+| **模型**         | **Average** | **BoolQ** | **PIQA** | **SIQA** | **HellaSwag** | **WinoGrande** | **ARC-e** | **ARC-c** | **OBQA** |
+| ---------------- | --------- | --------- | -------- | -------- | ------------- | -------------- | --------- | --------- | -------- |
+| **GPT-3**        |       | 60.5      | 81       | -        | 78.9          | 70.2           | 68.8      | 51.4      | 57.6     |
+| **Gopher**       |       | 79.3      | 81.8     | 50.6     | 79.2          | 70.1           | -         | -         | -        |
+| **Chinchilla**   |       | 83.7      | 81.8     | 51.3     | 80.8          | 74.9           | -         | -         | -        |
+| **PaLM**         |       | 84.8      | 80.5     | -        | 79.7          | 77             | 75.2      | 52.5      | 50.4     |
+| **LLaMA-7B**     | 66.13 | 76.5      | 79.8     | 48.9     | 76.1          | 70.1           | 72.8      | 47.6      | 57.2     |
+| **LLaMA-13B**    | 68.08 | 78.1      | 80.1     | 50.4     | 79.2          | 73             | 74.8      | 52.7      | 56.4     |
+| **CPM-Bee-0527** | 67.80 | 78.69     | 77.58    | 61.11    | 78.89         | 61.88          | 66.88     | 54.18     | 63.20    |
 
 
 ### CPM-Bee+ Decoder Tuning

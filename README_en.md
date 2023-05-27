@@ -294,7 +294,7 @@ Using the [Decoder Tuning](https://arxiv.org/abs/2212.08408) method developed jo
 ## 📃License
 
 #### Model License
-The CPM-Bee base, governed by the [General Model License (GML)](https://www.openbmb.org/models/license), permits commercial usage. If you intend to utilize the model for commercial purposes, please reach out to business@modelbest.cn to obtain the official license.
+The CPM-Bee base, governed by the [General Model License (GML)](https://github.com/OpenBMB/General-Model-License/blob/main/%E9%80%9A%E7%94%A8%E6%A8%A1%E5%9E%8B%E8%AE%B8%E5%8F%AF%E5%8D%8F%E8%AE%AE-%E6%9D%A5%E6%BA%90%E8%AF%B4%E6%98%8E-%E5%AE%A3%E4%BC%A0%E9%99%90%E5%88%B6-%E5%95%86%E4%B8%9A%E6%8E%88%E6%9D%83.md), permits commercial usage. If you intend to utilize the model for commercial purposes, please reach out to cpm@modelbest.cn to obtain the official license.
 
 
 #### Statement

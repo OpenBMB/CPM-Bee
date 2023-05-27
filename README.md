@@ -248,7 +248,7 @@ python text_generation.py
 ## 📃开源协议
 
 #### 模型协议
-CPM-Bee基座采用[通用模型许可协议](https://www.openbmb.org/models/license)，本模型允许商用，如需将模型用于商业用途，请联系business@modelbest.cn来获取正式许可。
+CPM-Bee基座采用协议为[“通用模型许可协议-来源说明-宣传限制-商业授权”](https://github.com/OpenBMB/General-Model-License/blob/main/%E9%80%9A%E7%94%A8%E6%A8%A1%E5%9E%8B%E8%AE%B8%E5%8F%AF%E5%8D%8F%E8%AE%AE-%E6%9D%A5%E6%BA%90%E8%AF%B4%E6%98%8E-%E5%AE%A3%E4%BC%A0%E9%99%90%E5%88%B6-%E5%95%86%E4%B8%9A%E6%8E%88%E6%9D%83.md)，本模型允许商用，如需将模型用于商业用途，请联系cpm@modelbest.cn来获取正式许可。
 
 #### 声明
 作为一个语言模型，CPM-Bee通过学习大量的文本来生成内容，但它无法理解、表达个人观点或价值判断，它所输出的任何内容都不代表模型开发者的观点和立场。

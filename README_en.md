@@ -171,10 +171,10 @@ Based on [BMCook](https://github.com/OpenBMB/BMCook), we have compressed the ori
 
 | Model         | #Attn.Layer | #FFN Layer| Attn Hidden Size | FFN Hidden Size | Download                                       |
 | ----------- | ------- | ----- | --------- | -------- | ---------------------------------------- |
-| CPM-Bee-10B | 48      | 48    | 4096      | 10240    |                                          |
-| CPM-Bee-5B  | 19      | 24    | 4096      | 10240    | [Link](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-5b/cpm-bee-5b.zip) |
-| CPM-Bee-2B  | 19      | 24    | 2048      | 5120     | [Link](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-2b/cpm-bee-2b.zip) |
-| CPM-Bee-1B  | 19      | 24    | 1280      | 1024     | [Link](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-1b/cpm-bee-1b.zip) |
+| CPM-Bee-10B | 48      | 48    | 4096      | 10240    | [Link](https://huggingface.co/openbmb/cpm-bee-10b/tree/main) |
+| CPM-Bee-5B  | 19      | 24    | 4096      | 10240    | [Link](https://huggingface.co/openbmb/cpm-bee-5b/tree/main) |
+| CPM-Bee-2B  | 19      | 24    | 2048      | 5120     | [Link](https://huggingface.co/openbmb/cpm-bee-2b/tree/main) |
+| CPM-Bee-1B  | 19      | 24    | 1280      | 1024     | [Link](https://huggingface.co/openbmb/cpm-bee-1b/tree/main) |
 
 
 

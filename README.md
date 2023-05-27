@@ -48,9 +48,9 @@ $ cd src
 $ pip install -r requirements.txt
 ```
 
-#### 模型
+### 模型
 
-模型权重下载链接
+- [**模型权重下载链接**](https://huggingface.co/openbmb/cpm-bee-10b/tree/main)
 
 - CPM-Bee的基座模型可以准确地进行语义理解，高效完成各类基础任务，包括：文字填空、文本生成、翻译、问答、评分预测、文本选择题等等。
 
@@ -86,7 +86,8 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 --use-delta \
 ```
 
-#### 任务流程
+
+任务流程
 要在特定任务上微调模型，您应该准备数据集并按如下方式执行：
 - 重新调整数据格式。
   您可以将分类问题集成到选择题的格式中。有关数据格式的更多信息，您可以查看CPM-Bee数据格式

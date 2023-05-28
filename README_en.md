@@ -40,7 +40,7 @@ Utilizing the Transformer auto-regressive architecture, CPM-Bee has been pre-tra
 ### Environment Setup
 Clone the CPM-Bee repository：
 ```bash
-$ git clone -b master --single-branch https://github.com/OpenBMB/CPM-Bee.git
+$ git clone -b main --single-branch https://github.com/OpenBMB/CPM-Bee.git
 ```
 Please ensure the environment to meet the following requirements:
 ```bash

@@ -35,7 +35,7 @@
 ## 🚀 安装和使用
 您需要克隆该仓库：
 ```bash
-$ git clone -b master --single-branch https://github.com/OpenBMB/CPM-Bee.git
+$ git clone -b main --single-branch https://github.com/OpenBMB/CPM-Bee.git
 ```
 并确保您的环境符合要求：
 ```bash

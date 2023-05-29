@@ -52,7 +52,6 @@ We recommend using Anaconda to manage your environment and install CPM-Bee and o
 ```bash
 $ cd src
 $ pip install -r requirements.txt
-$ python setup.py install
 ```
 `bmtrain` is the key dependency of CPM-Bee. If you meet some difficulties when installing `bmtrain`, you can refer to [BMTrain](https://github.com/OpenBMB/BMTrain) and choose appropriate version of torch and CUDA.
 

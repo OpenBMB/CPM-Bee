@@ -96,7 +96,9 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 
 ```bash
 $ python preprocess_dataset.py --input your/reformated/data/path --output_path your/binary/data/path --output_name data_name
+```
 预处理后，您将获得：
+```
 |-- your/binary/data/path
     |-- folder1
     |    |-- data_name

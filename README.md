@@ -89,8 +89,8 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 
 任务流程
 要在特定任务上微调模型，您应该准备数据集并按如下方式执行：
-- 重新调整数据格式。
-  您可以将分类问题集成到选择题的格式中。有关数据格式的更多信息，您可以查看CPM-Bee数据格式
+- 调整数据格式。
+  您可以将分类问题集成到选择题的格式中。有关数据格式的更多信息，您可以查看[CPM-Bee数据格式](#模型)
 - 将数据集预处理为二进制文件。
   要构建预处理数据集，您可以运行
 
@@ -112,7 +112,7 @@ $ python preprocess_dataset.py --input your/reformated/data/path --output_path y
 ``` bash
 $ bash scripts/finetune_cpm_bee.sh
 ```
-或者您可以直接通过torchrun运行finetune_cpm_bee.py。例如，您可以在具有4块GPU的服务器上对CPM-Bee进行微调，如下所示：
+或者您可以直接通过torchrun运行finetune_cpm_bee.py。例如，您可以在具有4块GPU的服务器上对CPM-Bee进行增量微调，如下所示：
 ```bash
 torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=localhost:12345 finetune_cpm_bee.py \
 --model-config your/model/config/path \
@@ -142,8 +142,8 @@ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_en
 
 | 模型          | 推理内存占用 | 推荐硬件           |
 | ----------- | ------ | -------------- |
-| CPM-Bee-10B | 20GB   | RTX3090（24 GB） |
-| CPM-Bee-5B  | 11 GB  | RTX3090（24 GB） |
+| CPM-Bee-10B | 20GB   | RTX 3090（24 GB） |
+| CPM-Bee-5B  | 11 GB  | RTX 3090（24 GB） |
 | CPM-Bee-2B  | 6.7 GB | GTX 1080（8 GB） |
 | CPM-Bee-1B  | 4.1 GB | GTX 1660（6 GB） |
 

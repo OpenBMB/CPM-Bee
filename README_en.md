@@ -128,7 +128,7 @@ To begin fine-tuning, you can run：
 ``` bash
 $ bash scripts/finetune_cpm_bee.sh
 ```
-Or you can run `finetune_cpm_bee.py` directly from `torchrun`. For example, you can fine-tune CPM-Bee on a server with 4 Gpus, as shown below
+Or you can run `finetune_cpm_bee.py` directly from `torchrun`. For example, you can fine-tune CPM-Bee by delta tuning on a server with 4 Gpus, as shown below
 ```bash
 torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=localhost:12345 finetune_cpm_bee.py \
 --model-config your/model/config/path \
@@ -184,8 +184,8 @@ For the compressed CPM-Bee models, regular consumer-grade GPUs are sufficient fo
 
 | Model          | Memory | Device           |
 | ----------- | ------ | -------------- |
-| CPM-Bee-10B | 20GB   | RTX3090（24 GB） |
-| CPM-Bee-5B  | 11 GB  | RTX3090（24 GB） |
+| CPM-Bee-10B | 20GB   | RTX 3090（24 GB） |
+| CPM-Bee-5B  | 11 GB  | RTX 3090（24 GB） |
 | CPM-Bee-2B  | 6.7 GB | GTX 1080（8 GB） |
 | CPM-Bee-1B  | 4.1 GB | GTX 1660（6 GB） |
 

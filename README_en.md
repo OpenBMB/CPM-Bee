@@ -16,7 +16,7 @@
 </div>
 
 
-**CPM-Bee** is a fully open-source, commercially-usable Chinese-English bilingual base model with a capacity of one hundred billion parameters. It is the second milestone achieved through the training process of [**CPM-live**](https://live.openbmb.org/).
+**CPM-Bee** is a fully open-source, commercially-usable Chinese-English bilingual base model with a capacity of one hundred billion parameters. It is the second milestone achieved through the training process of [**CPM-Live**](https://live.openbmb.org/).
 Utilizing the Transformer auto-regressive architecture, CPM-Bee has been pre-trained on an extensive corpus of trillion-scale tokens, thereby possessing remarkable foundational capabilities.
 
 
@@ -82,7 +82,7 @@ After preparing the configuration file and parameter file, you can refer to the 
 
 ```json
 "Blank Filling":{"input": "Researchers in the field of psychology have found that one of the best ways to make an important decision, such as choosing a university to attend or <mask_0>, involves the utilization of a decision worksheet. Psychologists who study optimization compare <mask_1> to theoretical ideal decisions to see how similar they are. Proponents of the worksheet procedure believe that it will yield optimal, that is, the best decisions. Although there are <mask_2> can take, they are all similar in their essential aspects.", "<ans>":{"<mask_0>": "", "<mask_1>": "", "<mask_2>": ""}},
-"Text Generation": {"input": "It was a fine day today. I went to the park with my mother. <mask>", "prompt": "write two sentences in the end", "<ans>":{"<mask>": ""}},
+"Text Generation": {"input": "It was a fine day today. I went to the park with my mother, ", "prompt": "write two sentences in the end", "<ans>": ""},
 "Translation": {"input": "Beijing is the capital of China.", "prompt": "translate to Chinese", "<ans>":""},
 "QA": {"input": "NGC 6231 is an open cluster located in the Scorpius constellation at the celestial coordinates of 1654 minutes right longitude, declination of -41 degrees 48 minutes, visual size of about 45 Angle minutes, brightness of about 2.6 apparent magnitude, 5900 light-years from Earth. NGC 6231 is about 3.2 million years old and is a very young cluster. The brightest star in the cluster is Zeta 1 of magnitude 5. Individual planets can be seen with binoculars or a small telescope. NGC 6231 was first recorded in 1654 by Italian astronomer Giovanni Battista Hodierna under the name Luminosae, but was not recorded in Charles Messier's list of objects or William Herschel's catalogue of Deep Sky Objects. This object was independently discovered again by Edmond Halley (I.7) in 1678, by Jean-Phillippe Loys de Cheseaux (9) in 1745, and by Nicolas Louie Lacay (I.13) in 1751.", "question": "What is the latitude of NGC 6231?", "<ans>": ""},
 "Score": {"input": "Before many meals have chosen here, there are various sizes of private rooms can accommodate a lot of people at the same time, the environment is good with features and performances, the overall dining atmosphere is driven up. Now because of the charcoal fire to electric roast sheep, the taste is not as good as before, but other dishes are still good, the lamb leftover bone can be processed with salt and pepper at the end is also very delicious.", "question": "What's the score?(1-5)", "<ans>": ""},
@@ -91,7 +91,7 @@ After preparing the configuration file and parameter file, you can refer to the 
 If you perform a translation task:
 ```shell
 >>> inputs = {"input": "北京是中国的首都", "prompt": "中翻英", "<ans>": ""}
->>> results = beam_search.generate([inputs], max_length=100)
+>>> results = beam_search.generate([inputs], max_length=100, repetition_penalty=1.1)
 >>> print(results[0]["<ans>"])
 Beijing is the capital of China
 ```
@@ -169,7 +169,7 @@ Based on [BMCook](https://github.com/OpenBMB/BMCook), we have compressed the ori
 
 
 
-| Model         | #Attn.Layer | #FFN Layer| Attn Hidden Size | FFN Hidden Size | Download                                       |
+| Model         | #Attn Layer | #FFN Layer| Attn Hidden Size | FFN Hidden Size | Download                                       |
 | ----------- | ------- | ----- | --------- | -------- | ---------------------------------------- |
 | CPM-Bee-10B | 48      | 48    | 4096      | 10240    | [Link](https://huggingface.co/openbmb/cpm-bee-10b/tree/main) |
 | CPM-Bee-5B  | 19      | 24    | 4096      | 10240    | [Link](https://huggingface.co/openbmb/cpm-bee-5b/tree/main) |
@@ -202,7 +202,7 @@ import torch
 
 # prepare your input data.
 data_list = [
-    {"input": "今天天气是真的<mask>", "prompt": "往后写一句话", "<ans>": {"<mask>": ""}},
+    {"input": "今天天气是真的", "prompt": "往后写一句话", "<ans>": ""},
     {"input": "北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ","<ans>":{"<mask_0>":"","<mask_1>":"","<mask_2>":"","<mask_3>":""}},
 ]
 
@@ -225,12 +225,12 @@ beam_search = CPMBeeBeamSearch(
     tokenizer=tokenizer,
 )
 for data in data_list:
-    inference_results = beam_search.generate([data], max_length=100)
+    inference_results = beam_search.generate([data], max_length=100, repetition_penalty=1.1)
     for res in inference_results:
         print(res)
 # output:
-# {'input': '今天天气是真的<mask>', 'prompt': '往后写一句话', '<ans>': {'<mask>': '好，阳光明媚，心情也跟着好起来了。'}}
-# {'input': '北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ', '<ans>': {'<mask_0>': '交通安全', '<mask_1>': '沙尘天气', '<mask_2>': '较高', '<mask_3>': '口罩、手套等防护用品'}}
+# {'input': '今天天气是真的', 'prompt': '往后写一句话', '<ans>': '好啊！'}
+# {'input': '北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ', '<ans>': {'<mask_0>': '防风', '<mask_1>': '沙尘天气', '<mask_2>': '较高', '<mask_3>': '口罩、护目镜等防护用品'}}
 ```
 
 We integrate the above code to a python file `text_generation.py`, which could be directly executed:
@@ -246,7 +246,7 @@ You can configure different input formats to accommodate different inference tas
 
 We conducted comprehensive evaluations of the CPM-Bee base model's Chinese and English language capabilities. In the Chinese Zero-CLUE benchmark, CPM-Bee outperformed other models considerably, ranking first among large Chinese models. In the English benchmark, CPM-Bee demonstrated comparable performance to the open-source model LLaMA.
 
-#### ZeroClue Chinese Evaluation
+#### ZeroCLUE Chinese Evaluation
 
 | **模型**         | **Score**| **EPRSTMT** | **CSLDCP** | **TNEWSF** | **IFLYTEKF** | **OCNLIF** | **BUSTM** | **CHIDF** | **CSLF**  | **CLUEWSCF** |
 | ---------------  | -------- |----------- | ---------- | ---------- | ------------ | ---------- | --------- | --------- | --------- | ------------ |
@@ -266,10 +266,10 @@ We conducted comprehensive evaluations of the CPM-Bee base model's Chinese and E
 | **PaLM**         |       | 84.8      | 80.5     | -        | 79.7          | 77             | 75.2      | 52.5      | 50.4     |
 | **LLaMA-7B**     | 66.13 | 76.5      | 79.8     | 48.9     | 76.1          | 70.1           | 72.8      | 47.6      | 57.2     |
 | **LLaMA-13B**    | 68.08 | 78.1      | 80.1     | 50.4     | 79.2          | 73             | 74.8      | 52.7      | 56.4     |
-| **CPM-Bee-0527** | 67.80 | 78.69     | 77.58    | 61.11    | 78.89         | 61.88          | 66.88     | 54.18     | 63.20    |
+| **CPM-Bee** | 67.80 | 78.69     | 77.58    | 61.11    | 78.89         | 61.88          | 66.88     | 54.18     | 63.20    |
 
 
-### CPM-Bee+ Decoder Tuning
+### CPM-Bee + Decoder Tuning
 
 Using the [Decoder Tuning](https://arxiv.org/abs/2212.08408) method developed jointly by OpenBMB and THUNLP (to be published at ACL 2023), it is possible to significantly improve the performance of downstream tasks solely through the use of APIs, without accessing or modifying the model parameters. This approach ensures both professionalism and fluency in achieving the desired results.
 

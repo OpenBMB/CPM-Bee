@@ -26,6 +26,6 @@ if __name__ == "__main__":
         model=model,
         tokenizer=tokenizer,
     )
-    inference_results = beam_search.generate(data_list, max_length=100)
+    inference_results = beam_search.generate(data_list, max_length=100, repetition_penalty=1.1)
     for res in inference_results:
         print(res)

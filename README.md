@@ -30,7 +30,11 @@
 
 - **🔨 对话和工具使用能力**： 结合OpenBMB在指令微调和工具学习的探索，我们在CPM-Bee基座模型的基础上进行微调，训练出了具有强大对话和工具使用能力的实例模型，API和内测将于近期开放。
 
+
 *Read this in [English](https://github.com/OpenBMB/CPM-Bee/blob/main/README_en.md).*
+
+
+*说明：CPM-Bee是一个基座模型，即从零开始进行预训练得来。我们鼓励用户在自己的场景和数据上进行适配后再进行使用，例如，[WebCPM](https://github.com/thunlp/WebCPM) 将CPM-Bee在人类进行网络检索的序列化数据上进行适配，获得了复杂问答和上网检索的能力。后续我们将会发布更多在CPM-Bee基座模型基础上适配的模型。*
 
 ## 🚀 安装和使用
 您需要克隆该仓库：

@@ -153,7 +153,7 @@ from cpm_live.tokenizers import CPMBeeTokenizer
 from opendelta import LoraModel
 import torch
 
-prepare your input data.
+# prepare your input data.
 data_list = [
     {"input": "今天天气是真的", "prompt": "往后写一句话", "<ans>": ""},
     {"input": "北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ","<ans>":{"<mask_0>":"","<mask_1>":"","<mask_2>":"","<mask_3>":""}},

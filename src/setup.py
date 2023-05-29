@@ -10,7 +10,7 @@ setup(
     install_requires=[
         "numpy",
         "torch>=1.10",
-        "bmtrain>=0.1.8",
+        "bmtrain>=0.2.0",
         "jieba",
         "tqdm",
         "tensorboard",

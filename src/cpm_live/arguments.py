@@ -76,9 +76,9 @@ def add_training_args(parser: argparse.ArgumentParser):
 
     group.add_argument(
         "--warmup-iters",
-        type=float,
-        default=0.01,
-        help="percentage of data to warmup on (.01 = 1% of all " "training iters). Default 0.01",
+        type=int,
+        default=100,
+        help="steps for learning rate warm-up",
     )
     group.add_argument(
         "--lr-decay-style",

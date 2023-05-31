@@ -17,8 +17,10 @@ if __name__ == "__main__":
 
     # insert LoRA if your model has been finetuned in delta-tuning.
     # delta_model = LoraModel(backbone_model=model, modified_modules=["project_q", "project_v"], backend="hf")
+    # lora_ckpt_path = "path/to/lora.pt"
+    # model.load_state_dict(torch.load(lora_ckpt_path), strict=False)
 
-    model.load_state_dict(torch.load(ckpt_path))
+    model.load_state_dict(torch.load(ckpt_path), strict=False)
     model.cuda()
 
     # use beam search

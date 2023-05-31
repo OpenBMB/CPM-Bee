@@ -69,9 +69,9 @@ After preparing the configuration file and parameter file, you can refer to the 
 >>> model = CPMBeeTorch(CPMBeeConfig.from_json_file("/your/config"))
 >>> model.load_state_dict(torch.load("/your/model/checkpoint"))
 >>> model.cuda()
->>> inputs = {"input": "今天天气真好，<mask>", "<ans>": ""}
+>>> inputs = {"input": "今天天气真好，", "<ans>": ""}
 >>> beam_search = CPMBeeBeamSearch(model=model, tokenizer=tokenizer)
->>> inference_results = beam_search.generate([inputs], max_length=100)
+>>> inference_results = beam_search.generate([inputs], max_length=100, repetition_penalty=1.1)
 >>> print(inference_results[0]["<ans>"])
 心情也很好
 ```
@@ -213,9 +213,11 @@ model = CPMBeeTorch(config=config)
 
 # insert LoRA if your model has been finetuned in delta-tuning.
 # delta_model = LoraModel(backbone_model=model, modified_modules=["project_q", "project_v"], backend="hf")
+# lora_ckpt_path = "path/to/lora.pt"
+# model.load_state_dict(torch.load(lora_ckpt_path), strict=False)
 
 # load checkpoints
-model.load_state_dict(torch.load(ckpt_path))
+model.load_state_dict(torch.load(ckpt_path), strict=False)
 model.cuda()
 
 # use beam search

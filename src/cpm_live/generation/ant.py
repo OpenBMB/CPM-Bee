@@ -180,7 +180,7 @@ class CPMAntBeamSearch(CPMAntGeneration):
                 scores
             )  # (batch_size * beam_size, vocab_size)
 
-            # re-organize to group the beam together (we are keeping top hypothesis accross beams)
+            # re-organize to group the beam together (we are keeping top hypothesis across beams)
             next_scores = next_scores.view(batch_size, -1)  # (batch_size, beam_size * vocab_size)
             next_scores, next_words = torch.topk(
                 next_scores, 2 * beam_size, dim=1, largest=True, sorted=True

@@ -16,7 +16,7 @@
 </div>
 
 
-**CPM-Bee** is a fully open-source, commercially-usable Chinese-English bilingual base model with a capacity of one hundred billion parameters. It is the second milestone achieved through the training process of [**CPM-Live**](https://live.openbmb.org/).
+**CPM-Bee** is a fully open-source, commercially-usable Chinese-English bilingual base model with a capacity of ten billion parameters. It is the second milestone achieved through the training process of [**CPM-Live**](https://live.openbmb.org/).
 Utilizing the Transformer auto-regressive architecture, CPM-Bee has been pre-trained on an extensive corpus of trillion-scale tokens, thereby possessing remarkable foundational capabilities.
 
 

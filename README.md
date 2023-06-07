@@ -38,7 +38,11 @@
 
 <div align="center">
 
-<img src="https://i.imgloc.com/2023/06/07/VwgvQc.png" width="650px">
+<img src="https://i.imgloc.com/2023/06/07/VwgvQc.png" width="700px">
+
+<div align="center">
+本仓库主要提供 CPM-Bee 基座模型，可被适配到各类场景
+</div>
 
 </div>
 

@@ -4,7 +4,7 @@
 ```
 放置在路径`raw_data/`下
 
-准备模型checkpoint，放在路径`src/ckpts/pytorch_model.bin`下
+准备模型checkpoint，假设您创建了路径`src/ckpts`, 模型checkpoint可以放在路径`src/ckpts/pytorch_model.bin`下
 
 2. 进入工作路径
 ```bash

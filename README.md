@@ -159,11 +159,10 @@ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_en
 
 | 模型          | #Attn层 | #FFN层 | Attn隐状态维度 | FFN隐状态维度 | 下载                                       |
 | ----------- | ------- | ----- | --------- | -------- | ---------------------------------------- |
-| CPM-Bee-10B | 48      | 48    | 4096      | 10240    | [链接](https://huggingface.co/openbmb/cpm-bee-10b/tree/main) |
-| CPM-Bee-5B  | 19      | 24    | 4096      | 10240    | [链接](https://huggingface.co/openbmb/cpm-bee-5b/tree/main) |
-| CPM-Bee-2B  | 19      | 24    | 2048      | 5120     | [链接](https://huggingface.co/openbmb/cpm-bee-2b/tree/main) |
-| CPM-Bee-1B  | 19      | 24    | 1280      | 1024     | [链接](https://huggingface.co/openbmb/cpm-bee-1b/tree/main) |
-
+| CPM-Bee-10B | 48      | 48    | 4096      | 10240    | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-10b/cpm-bee-10b.zip) |
+| CPM-Bee-5B  | 19      | 24    | 4096      | 10240    | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-5b/cpm-bee-5b.zip) |
+| CPM-Bee-2B  | 19      | 24    | 2048      | 5120     | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-2b/cpm-bee-2b.zip) |
+| CPM-Bee-1B  | 19      | 24    | 1280      | 1024     | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-1b/cpm-bee-1b.zip) |
 
 
 ### 模型部署

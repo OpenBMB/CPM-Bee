@@ -203,6 +203,12 @@ class CPMBeeGeneration:
         padded["batch_ext_table_sub"] = torch.tensor(
             batch_ext_table_sub, dtype=torch.int32, device="cuda"
         )
+
+        # move to model device
+        for k, v in padded.items():
+            if isinstance(v, torch.Tensor):
+                padded[k] = v.to(self.model.input_embedding.weight.device)
+
         return padded, other_info
 
     def generate(self, data_list, **kwargs):
@@ -396,7 +402,7 @@ class CPMBeeBeamSearch(CPMBeeGeneration):
                 input = torch.cat(
                     [
                         input,
-                        torch.tensor(tmp_input, dtype=torch.int32, device="cuda").view(
+                        torch.tensor(tmp_input, dtype=torch.int32, device=input.device).view(
                             batch_size * beam_size, 1
                         ),
                     ],
@@ -404,20 +410,20 @@ class CPMBeeBeamSearch(CPMBeeGeneration):
                 )
                 logits, _, past_key_values = self.model.inference(
                     input=input[:, -1:],
-                    input_sub=torch.tensor(tmp_input_sub, dtype=torch.int32, device="cuda").view(
+                    input_sub=torch.tensor(tmp_input_sub, dtype=torch.int32, device=input.device).view(
                         batch_size * beam_size, 1
                     ),
-                    position=torch.tensor(tmp_position, dtype=torch.int32, device="cuda").view(
+                    position=torch.tensor(tmp_position, dtype=torch.int32, device=input.device).view(
                         batch_size * beam_size, 1
                     ),
                     context=torch.ones(
-                        batch_size * beam_size, dtype=torch.bool, device="cuda"
+                        batch_size * beam_size, dtype=torch.bool, device=input.device
                     ).view(batch_size * beam_size, 1),
                     sample_ids=torch.zeros(
-                        batch_size * beam_size, dtype=torch.int32, device="cuda"
+                        batch_size * beam_size, dtype=torch.int32, device=input.device
                     ).view(batch_size * beam_size, 1),
                     num_segments=num_segments[:, -1:],
-                    segment=torch.tensor(tmp_segment, dtype=torch.int32, device="cuda").view(
+                    segment=torch.tensor(tmp_segment, dtype=torch.int32, device=input.device).view(
                         batch_size * beam_size, 1
                     ),
                     segment_rel_offset=segment_rel_offset[:, -1:],

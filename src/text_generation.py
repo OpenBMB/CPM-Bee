@@ -1,10 +1,21 @@
+from argparse import ArgumentParser
 from cpm_live.generation.bee import CPMBeeBeamSearch
 from cpm_live.models import CPMBeeTorch, CPMBeeConfig
 from cpm_live.tokenizers import CPMBeeTokenizer
 from opendelta import LoraModel
 import torch
 
-if __name__ == "__main__":
+def parse_args():
+    parser = ArgumentParser()
+    parser.add_argument("--use-bminf", default=False, action="store_true", help="Whether to use BMInf")
+    parser.add_argument("--memory-limit", type=int, default=20, help="GPU Memory limit, in GB")
+    parser.add_argument("--delta", default=None, type=str, help="The path to lora.")
+    parser.add_argument("--device", default="cuda:0", type=str, help="The target device.")
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_args()
 
     data_list = [
         {"document": "今天天气是真的<mask_0>", "<ans>": {"<mask_0>": ""}},
@@ -15,13 +26,22 @@ if __name__ == "__main__":
     tokenizer = CPMBeeTokenizer()
     model = CPMBeeTorch(config=config)
 
-    # insert LoRA if your model has been finetuned in delta-tuning.
-    # delta_model = LoraModel(backbone_model=model, modified_modules=["project_q", "project_v"], backend="hf")
-    # lora_ckpt_path = "path/to/lora.pt"
-    # model.load_state_dict(torch.load(lora_ckpt_path), strict=False)
+    if args.delta is not None:
+        delta_model = LoraModel(backbone_model=model, modified_modules=["project_q", "project_v"], backend="hf")
+        model.load_state_dict(torch.load(args.delta), strict=False)
 
     model.load_state_dict(torch.load(ckpt_path), strict=False)
-    model.cuda()
+
+    if args.device == "cpu":
+        model = model.float()
+    else:
+        if not torch.cuda.is_available():
+            raise AssertionError("The CUDA is unavailable")
+        if args.use_bminf:
+            import bminf
+            with torch.cuda.device(args.device):
+                model = bminf.wrapper(model, quantization=False, memory_limit=args.memory_limit << 30)
+        model.cuda(args.device)
 
     # use beam search
     beam_search = CPMBeeBeamSearch(
@@ -31,3 +51,6 @@ if __name__ == "__main__":
     inference_results = beam_search.generate(data_list, max_length=100, repetition_penalty=1.1)
     for res in inference_results:
         print(res)
+
+if __name__ == "__main__":
+    main()

@@ -232,8 +232,10 @@ class RotaryEmbedding(torch.nn.Module):
             x (:obj:`torch.Tensor` of shape ``(..., dim)``): Inputs.
             x_pos (:obj:`torch.Tensor` of shape ``(...)``): Positions of inputs.
         """
+        inv_freq = self.inv_freq.to(device=x.device, dtype=x.dtype)
+
         x_pos = x_pos * self.distance_scale
-        freqs = x_pos[..., None].to(self.dtype) * self.inv_freq[None, :]  # (..., dim/2)
+        freqs = x_pos[..., None] * inv_freq[None, :]  # (..., dim/2)
 
         # the same implementation as sat
         emb = torch.cat((freqs, freqs), dim=-1)  # (..., dim)

@@ -168,12 +168,12 @@ Based on [BMCook](https://github.com/OpenBMB/BMCook), we have compressed the ori
 
 
 
-| Model         | #Attn Layer | #FFN Layer| Attn Hidden Size | FFN Hidden Size | Download                                       |
-| ----------- | ------- | ----- | --------- | -------- | ---------------------------------------- |
-| CPM-Bee-10B | 48      | 48    | 4096      | 10240    | [Link](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-10b/cpm-bee-10b.zip) |
-| CPM-Bee-5B  | 19      | 24    | 4096      | 10240    | [Link](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-5b/cpm-bee-5b.zip) |
-| CPM-Bee-2B  | 19      | 24    | 2048      | 5120     | [Link](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-2b/cpm-bee-2b.zip) |
-| CPM-Bee-1B  | 19      | 24    | 1280      | 1024     | [Link](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-1b/cpm-bee-1b.zip) |
+| Model         | #Attn Layer | #FFN Layer| Attn Hidden Size | FFN Hidden Size | Download                                       | HF🤗 |
+| ----------- | ------- | ----- | --------- | -------- | ---------------------------------------- | --- |
+| CPM-Bee-10B | 48      | 48    | 4096      | 10240    | [Link](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-10b/cpm-bee-10b.zip) | [Link](https://huggingface.co/openbmb/cpm-bee-10b) |
+| CPM-Bee-5B  | 19      | 24    | 4096      | 10240    | [Link](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-5b/cpm-bee-5b.zip) | [Link](https://huggingface.co/openbmb/cpm-bee-5b) |
+| CPM-Bee-2B  | 19      | 24    | 2048      | 5120     | [Link](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-2b/cpm-bee-2b.zip) | [Link](https://huggingface.co/openbmb/cpm-bee-2b) |
+| CPM-Bee-1B  | 19      | 24    | 1280      | 1024     | [Link](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-1b/cpm-bee-1b.zip) | [Link](https://huggingface.co/openbmb/cpm-bee-1b) |
 
 
 
@@ -190,19 +190,37 @@ For the compressed CPM-Bee models, regular consumer-grade GPUs are sufficient fo
 | CPM-Bee-1B  | 4.1 GB | GTX 1660（6 GB） |
 
 
+#### Huggingface
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+tokenizer = AutoTokenizer.from_pretrained("openbmb/cpm-bee-10b", trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("openbmb/cpm-bee-10b", trust_remote_code=True).cuda()
+result = model.generate({"input": "今天天气不错，", "<ans>": ""}, tokenizer)
+print(result)
+```
+我们提供了一个基于huggingface的推理脚本`text_generation_hf.py`，您可以运行
+```shell
+python text_generation_hf.py
+```
+Deploy with multi GPUs:
+```shell
+python text_generation_hf.py --multi-gpu
+```
+Deploy with multi GPUs and load LoRA model:
+```shell
+python text_generation_hf.py --multi-gpu --delta delta.pt
+```
 
-
+#### Local
 ```python
 from cpm_live.generation.bee import CPMBeeBeamSearch
 from cpm_live.models import CPMBeeTorch, CPMBeeConfig
 from cpm_live.tokenizers import CPMBeeTokenizer
-from opendelta import LoraModel
 import torch
 
 # prepare your input data.
 data_list = [
-    {"input": "今天天气是真的", "prompt": "往后写一句话", "<ans>": ""},
-    {"input": "北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ","<ans>":{"<mask_0>":"","<mask_1>":"","<mask_2>":"","<mask_3>":""}},
+    {"input": "今天天气是真的", "prompt": "往后写一句话", "<ans>": ""}
 ]
 
 # load model
@@ -210,11 +228,6 @@ config = CPMBeeConfig.from_json_file("cpm-bee-5b.json")
 ckpt_path = "cpm-bee-5b-ckpt.pt"
 tokenizer = CPMBeeTokenizer()
 model = CPMBeeTorch(config=config)
-
-# insert LoRA if your model has been finetuned in delta-tuning.
-# delta_model = LoraModel(backbone_model=model, modified_modules=["project_q", "project_v"], backend="hf")
-# lora_ckpt_path = "path/to/lora.pt"
-# model.load_state_dict(torch.load(lora_ckpt_path), strict=False)
 
 # load checkpoints
 model.load_state_dict(torch.load(ckpt_path), strict=False)
@@ -229,9 +242,6 @@ for data in data_list:
     inference_results = beam_search.generate([data], max_length=100, repetition_penalty=1.1)
     for res in inference_results:
         print(res)
-# output:
-# {'input': '今天天气是真的', 'prompt': '往后写一句话', '<ans>': '好啊！'}
-# {'input': '北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ', '<ans>': {'<mask_0>': '防风', '<mask_1>': '沙尘天气', '<mask_2>': '较高', '<mask_3>': '口罩、护目镜等防护用品'}}
 ```
 
 We integrate the above code to a python file `text_generation.py`, which could be directly executed:
@@ -239,6 +249,18 @@ We integrate the above code to a python file `text_generation.py`, which could b
 python text_generation.py
 ```
 You can configure different input formats to accommodate different inference tasks.
+If use bminf:
+```shell
+python text_generation.py --use-bminf --memory-limit 12
+```
+If use CPU：
+```shell
+python text_generation.py --device cpu
+```
+If load LoRA model:
+```shell
+python text_generation_hf.py --delta delta.pt
+```
 
 
 ## 💫 Performance

@@ -72,7 +72,7 @@ $ pip install -r requirements.txt
 
 ### 模型
 
-- [**模型权重下载链接**](https://huggingface.co/openbmb/cpm-bee-10b/tree/main)
+- [**模型权重下载链接**](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-10b/cpm-bee-10b.zip)（我们提供了基于huggingface-transformers的适配，要想使用huggingface的方式启动模型，您可以参考cpm-bee的[huggingface页面](https://huggingface.co/openbmb/cpm-bee-10b)。）
 
 - CPM-Bee的基座模型可以准确地进行语义理解，高效完成各类基础任务，包括：文字填空、文本生成、翻译、问答、评分预测、文本选择题等等。
 
@@ -110,6 +110,7 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 
 
 任务流程
+
 要在特定任务上微调模型，您应该准备数据集并按如下方式执行：
 - 调整数据格式。
   您可以将分类问题集成到选择题的格式中。有关数据格式的更多信息，您可以查看[CPM-Bee数据格式](#模型)\
@@ -152,17 +153,19 @@ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_en
 --use-delta 
 ```
 
+我们建议您使用上述方案微调，如果您不便配置微调环境bmtrain，可以参考[hf页面](https://huggingface.co/openbmb/cpm-bee-10b)，使用您自己的并行化策略来微调CPM-Bee。
+
 
 ### 模型压缩
 
-基于[BMCook](https://github.com/OpenBMB/BMCook)，我们对原始的CPM-Bee基座模型进行压缩，提供了多种大小的CPM-Bee模型来适应各种不同的场景。
+基于[BMCook](https://github.com/OpenBMB/BMCook)，我们对原始的CPM-Bee基座模型进行压缩，提供了多种大小的CPM-Bee模型来适应各种不同的场景。此外，我们针对不同大小的模型都提供了基于huggingface版本，您可以点击HF🤗一栏的链接，进入模型仓库查看更多相关信息。
 
-| 模型          | #Attn层 | #FFN层 | Attn隐状态维度 | FFN隐状态维度 | 下载                                       |
-| ----------- | ------- | ----- | --------- | -------- | ---------------------------------------- |
-| CPM-Bee-10B | 48      | 48    | 4096      | 10240    | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-10b/cpm-bee-10b.zip) |
-| CPM-Bee-5B  | 19      | 24    | 4096      | 10240    | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-5b/cpm-bee-5b.zip) |
-| CPM-Bee-2B  | 19      | 24    | 2048      | 5120     | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-2b/cpm-bee-2b.zip) |
-| CPM-Bee-1B  | 19      | 24    | 1280      | 1024     | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-1b/cpm-bee-1b.zip) |
+| 模型          | #Attn层 | #FFN层 | Attn隐状态维度 | FFN隐状态维度 | 下载                                       | HF🤗
+| ----------- | ------- | ----- | --------- | -------- | ---------------------------------------- | ---- |
+| CPM-Bee-10B | 48      | 48    | 4096      | 10240    | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-10b/cpm-bee-10b.zip) | [链接](https://huggingface.co/openbmb/cpm-bee-10b) |
+| CPM-Bee-5B  | 19      | 24    | 4096      | 10240    | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-5b/cpm-bee-5b.zip) | [链接](https://huggingface.co/openbmb/cpm-bee-5b) |
+| CPM-Bee-2B  | 19      | 24    | 2048      | 5120     | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-2b/cpm-bee-2b.zip) | [链接](https://huggingface.co/openbmb/cpm-bee-2b) |
+| CPM-Bee-1B  | 19      | 24    | 1280      | 1024     | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-1b/cpm-bee-1b.zip) | [链接](https://huggingface.co/openbmb/cpm-bee-1b) |
 
 
 ### 模型部署
@@ -176,18 +179,38 @@ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_en
 | CPM-Bee-2B  | 6.7 GB | GTX 1080（8 GB） |
 | CPM-Bee-1B  | 4.1 GB | GTX 1660（6 GB） |
 
-对于具体的推理任务，您可以编写自己的推理代码。这里我们举一个简单的文本生成示例。
+#### Huggingface
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+tokenizer = AutoTokenizer.from_pretrained("openbmb/cpm-bee-10b", trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("openbmb/cpm-bee-10b", trust_remote_code=True).cuda()
+result = model.generate({"input": "今天天气不错，", "<ans>": ""}, tokenizer)
+print(result)
+```
+我们提供了一个基于huggingface的推理脚本`text_generation_hf.py`，您可以运行
+```shell
+python text_generation_hf.py
+```
+多卡部署：
+```shell
+python text_generation_hf.py --multi-gpu
+```
+多卡部署的基础上，加载微调后的delta模型:
+```shell
+python text_generation_hf.py --multi-gpu --delta delta.pt
+```
+
+#### Local
+对于具体的推理任务，您可以根据克隆下来的CPM-Bee仓库编写自己的推理代码。这里我们举一个简单的文本生成示例。
 ```python
 from cpm_live.generation.bee import CPMBeeBeamSearch
 from cpm_live.models import CPMBeeTorch, CPMBeeConfig
 from cpm_live.tokenizers import CPMBeeTokenizer
-from opendelta import LoraModel
 import torch
 
 # prepare your input data.
 data_list = [
-    {"input": "今天天气是真的", "prompt": "往后写一句话", "<ans>": ""},
-    {"input": "北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ","<ans>":{"<mask_0>":"","<mask_1>":"","<mask_2>":"","<mask_3>":""}},
+    {"input": "今天天气是真的", "prompt": "往后写一句话", "<ans>": ""}
 ]
 
 # load model
@@ -195,11 +218,6 @@ config = CPMBeeConfig.from_json_file("cpm-bee-5b.json")
 ckpt_path = "cpm-bee-5b-ckpt.pt"
 tokenizer = CPMBeeTokenizer()
 model = CPMBeeTorch(config=config)
-
-# insert LoRA
-# delta_model = LoraModel(backbone_model=model, modified_modules=["project_q", "project_v"], backend="hf")
-# lora_ckpt_path = "path/to/lora.pt"
-# model.load_state_dict(torch.load(lora_ckpt_path), strict=False)
 
 # load checkpoints
 model.load_state_dict(torch.load(ckpt_path), strict=False)
@@ -214,16 +232,24 @@ for data in data_list:
     inference_results = beam_search.generate([data], max_length=100, repetition_penalty=1.1)
     for res in inference_results:
         print(res)
-# output:
-# {'input': '今天天气是真的', 'prompt': '往后写一句话', '<ans>': {'<mask>': '好啊！'}}
-# {'input': '北京市气象台提示，4月12日午后偏南风加大，阵风可达6级左右，南下的沙尘可能伴随回流北上进京，外出仍需注意<mask_0>，做好健康防护。天津市气象台也提示，受<mask_1>影响，我市4月12日有浮尘天气，PM10浓度<mask_2>。请注意关好门窗，老人儿童尽量减少户外活动，外出注意带好<mask_3>。” ', '<ans>': {'<mask_0>': '防风', '<mask_1>': '沙尘天气', '<mask_2>': '较高', '<mask_3>': '口罩、护目镜等防护用品'}}
 ```
 
-我们还将上面的代码集成到一个python文件`text_generation.py`中，为了便于推断，可以直接运行该文件：
+我们还将上面的代码集成到一个python文件`text_generation.py`中，为了便于推理，可以直接运行该文件：
 ```bash
 python text_generation.py
 ```
-您可以设置不同的输入格式，以适应不同的推理任务。
+如果使用bminf:
+```shell
+python text_generation.py --use-bminf --memory-limit 12
+```
+如果希望cpu推理：
+```shell
+python text_generation.py --device cpu
+```
+加载微调后的delta模型:
+```shell
+python text_generation_hf.py --delta delta.pt
+```
 
 
 ## 💫 性能表现

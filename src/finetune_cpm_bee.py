@@ -35,6 +35,7 @@ def get_tokenizer(args):
 def get_model(args):
     config = CPMBeeConfig.from_json_file(args.model_config)
     model = CPMBee(config)
+    model.config = config
     if args.load is not None:
         bmt.load(model, args.load)
     else:
@@ -194,7 +195,10 @@ def finetune(
 ):
 
     average_time = bmt.utils.AverageRecorder()
-    loss_func = bmt.loss.FusedCrossEntropy(ignore_index=-100)
+    if model.config.dtype == torch.half:
+        loss_func = bmt.loss.FusedCrossEntropy(ignore_index=-100)
+    else:
+        loss_func = torch.nn.CrossEntropyLoss(ignore_index=-100)
 
     if args.tensorboard is not None and bmt.rank() == 0:
         from torch.utils.tensorboard import SummaryWriter
@@ -273,7 +277,7 @@ def finetune(
                 ext_table_ids,
                 ext_table_sub,
             )
-            loss = loss_func(logits.view(-1, logits.size(-1)), targets.view(-1))
+            loss = loss_func(logits.view(-1, logits.size(-1)), targets.long().view(-1))
             if skip_this_batch:
                 loss = loss * 0
 
@@ -306,7 +310,7 @@ def finetune(
                 if not skip_this_batch:
                     for i in range(task_num):
                         task_loss = loss_func(
-                            logits.view(-1, logits.size(-1)), targets_tmp[i, :].view(-1)
+                            logits.view(-1, logits.size(-1)), targets_tmp[i, :].long().view(-1)
                         )
                         task_loss_map[task_names[i]] = task_loss.item()
                 gatherd_task_loss_map: List[Dict[str, float]] = allgather_objects(task_loss_map)

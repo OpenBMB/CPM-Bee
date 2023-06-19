@@ -188,7 +188,7 @@ class CPMBeeGeneration:
         keys = set(pack_tensor[0].keys())
         padded = {}
         for key in keys:
-            padded[key] = pad(pack_tensor, key).cuda()
+            padded[key] = pad(pack_tensor, key)
 
         max_num_rels = 0
         for rel in segment_rel_pack:
@@ -196,12 +196,12 @@ class CPMBeeGeneration:
         padded_rels = torch.zeros(len(segment_rel_pack), max_num_rels, dtype=torch.int32)
         for i, rel in enumerate(segment_rel_pack):
             padded_rels[i, : rel.size(0)] = rel
-        padded["segment_rel"] = padded_rels.cuda()
+        padded["segment_rel"] = padded_rels
         padded["batch_ext_table_ids"] = torch.tensor(
-            batch_ext_table_ids, dtype=torch.int32, device="cuda"
+            batch_ext_table_ids, dtype=torch.int32
         )
         padded["batch_ext_table_sub"] = torch.tensor(
-            batch_ext_table_sub, dtype=torch.int32, device="cuda"
+            batch_ext_table_sub, dtype=torch.int32
         )
 
         # move to model device

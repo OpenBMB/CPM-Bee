@@ -226,7 +226,7 @@ class RotaryEmbedding(bmt.DistributedModule):
     ):
         super().__init__()
         inv_freq = 1.0 / (
-            base ** (torch.arange(0, dim, 2, device="cuda", dtype=torch.float32) / dim)
+            base ** (torch.arange(0, dim, 2, dtype=torch.float32) / dim)
         )
         inv_freq = inv_freq.to(dtype)
         self.distance_scale = distance_scale
@@ -239,8 +239,10 @@ class RotaryEmbedding(bmt.DistributedModule):
             x (:obj:`torch.Tensor` of shape ``(..., dim)``): Inputs.
             x_pos (:obj:`torch.Tensor` of shape ``(...)``): Positions of inputs.
         """
+        inv_freq = self.inv_freq.to(device=x.device, dtype=x.dtype)
+
         x_pos = x_pos * self.distance_scale
-        freqs = x_pos[..., None].to(self.dtype) * self.inv_freq[None, :]  # (..., dim/2)
+        freqs = x_pos[..., None].to(self.dtype) * inv_freq[None, :]  # (..., dim/2)
 
         # the same implementation as sat
         emb = torch.cat((freqs, freqs), dim=-1)  # (..., dim)

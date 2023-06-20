@@ -21,11 +21,11 @@
 
 - **👐 开源可商用**：OpenBMB始终秉承“让大模型飞入千家万户”的开源精神，CPM-Bee基座模型将完全开源并且可商用，以推动大模型领域的发展。我们鼓励全球范围内的科研机构、企业和个人开发者在遵守[开源许可协议](#模型协议)的前提下，自由地在CPM-Bee基座模型上进行创新。
 
-- **💫 中英双语性能优异**： CPM-Bee基座模型在预训练语料上进行了严格的筛选和配比，同时在中英双语上具有亮眼表现，具体可参见[评测任务和结果](#零样本评测)。
+- **💫 中英双语性能优异**：CPM-Bee基座模型在预训练语料上进行了严格的筛选和配比，同时在中英双语上具有亮眼表现，具体可参见[评测任务和结果](#零样本评测)。
 
-- **📖 超大规模高质量语料**： CPM-Bee基座模型在超万亿语料进行训练，是开源社区内经过语料最多的模型之一。同时，我们对预训练语料进行了严格的筛选、清洗和后处理以确保质量。
+- **📖 超大规模高质量语料**：CPM-Bee基座模型在超万亿语料进行训练，是开源社区内经过语料最多的模型之一。同时，我们对预训练语料进行了严格的筛选、清洗和后处理以确保质量。
 
-- **<img src="https://i.imgloc.com/2023/05/21/V4nLS3.png" width="20px"> OpenBMB大模型系统生态支持**： OpenBMB大模型系统在高性能预训练、适配、压缩、部署、工具开发了一系列工具，CPM-Bee基座模型将配套所有的工具脚本，高效支持开发者进行进阶使用。
+- **<img src="https://i.imgloc.com/2023/05/21/V4nLS3.png" width="20px"> OpenBMB大模型系统生态支持**：OpenBMB大模型系统围绕高性能预训练、适配、压缩、推理开发了一系列工具，CPM-Bee基座模型将配套所有的工具脚本，高效支持开发者进行进阶使用。
 
 
 - **🔨 对话和工具使用能力**： 结合OpenBMB在指令微调和工具学习的探索，我们在CPM-Bee基座模型的基础上进行微调，训练出了具有强大对话和工具使用能力的实例模型，API和内测将于近期开放。
@@ -49,7 +49,7 @@
 
 ## 📰  更新信息
 
-
+- **[2023/06/16]**  CPM-Bee现已支持🤗[Transformers](https://huggingface.co/openbmb/cpm-bee-10b)。
 - **[2023/06/08]**  更新了使用CPM-Bee进行基础任务微调的[教程](https://github.com/OpenBMB/CPM-Bee/tree/main/tutorials/basic_task_finetune)。
 - **[2023/05/27]**  百亿参数，允许商用的中英双语基座模型CPM-Bee开源了，它是[**CPM-Live**](https://live.openbmb.org/)的第二个里程碑。
 
@@ -62,7 +62,7 @@ $ git clone -b main --single-branch https://github.com/OpenBMB/CPM-Bee.git
 并确保您的环境符合要求：
 ```bash
 - python>=3.7
-- torch>=1.10
+- torch>=1.10,<2.0.0
 ```
 我们建议使用Anaconda管理环境并从PyPI安装其他依赖项：
 ```bash
@@ -72,9 +72,9 @@ $ pip install -r requirements.txt
 
 ### 模型
 
-- [**模型权重下载链接**](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-10b/cpm-bee-10b.zip)（我们提供了基于huggingface-transformers的适配，要想使用huggingface的方式启动模型，您可以参考cpm-bee的[huggingface页面](https://huggingface.co/openbmb/cpm-bee-10b)。）
+- [**10B模型下载链接**](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-10b/cpm-bee-10b.zip)（如果要使用🤗Transformers运行模型，请参考[这里](https://huggingface.co/openbmb/cpm-bee-10b)）。
 
-- CPM-Bee的基座模型可以准确地进行语义理解，高效完成各类基础任务，包括：文字填空、文本生成、翻译、问答、评分预测、文本选择题等等。
+- CPM-Bee的基座模型可以准确地进行语义理解，高效完成各类基础任务，包括：填空、文本生成、翻译、问答、评分预测、文本选择题等等。
 
 ```json
 "填空":{"input": "心理学领域的研究人员发现，做出重要决定的最好方法之一，比如选择一所大学或<mask_0>，都涉及到使用决策工作表。研究优化的心理学家将<mask_1>与理论理想决策进行比较，看看它们有多相似。工作表程序的支持者认为它会产生最优的，也就是说，最好的决策。虽然有<mask_2>可以接受，但它们在本质上都是相似的。","<ans>":{"<mask_0>":"","<mask_1>":"","<mask_2>":""}},
@@ -87,15 +87,11 @@ $ pip install -r requirements.txt
 
 ## <img src="https://i.imgloc.com/2023/05/21/V4nLS3.png" width="25px"> OpenBMB
 
-基于OpenBMB的大模型系统生态，我们在训练CPM-Bee的过程中实现了全流程高效。同时提供了继续训练（基于BMTrain）、微调（基于OpenPrompt和OpenDelta）、工具使用（基于BMTools）、模型压缩（基于BMCook）、高效推理（基于BMInf）的全套脚本，可以协助开发者快速上手和使用CPM-Bee。
-
-### 预训练
-
-我们提供了基于[BMTrain]([https://github.com/OpenBMB/BMTrain](https://github.com/OpenBMB/BMTrain))加速的预训练[脚本](https://github.com/OpenBMB/CPM-Bee/blob/main/src/pretrain_cpm_bee.py)，大幅提升预训练效率。
+基于OpenBMB的大模型系统生态，我们在训练CPM-Bee的过程中实现了全流程高效。同时提供了模型微调（基于BMTrain和OpenDelta）、工具使用（基于BMTools）、模型压缩（基于BMCook）、低资源推理（基于BMInf）的全套脚本，可以协助开发者快速上手和使用CPM-Bee。
 
 ### 模型微调
 
-基于[OpenDelta](https://github.com/thunlp/OpenDelta)，我们给出了两种微调方案：全参数微调和参数高效的增量微调，可以将CPM-Bee适配到各类下游场景中。
+基于[BMTrain](https://github.com/OpenBMB/BMTrain)和[OpenDelta](https://github.com/thunlp/OpenDelta)，我们给出了两种微调方案：全参数微调和参数高效的增量微调，可以将CPM-Bee适配到各类下游场景中。
 
 1. 全参数微调：
 ```bash
@@ -109,7 +105,7 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 ```
 
 
-任务流程
+**微调流程**
 
 要在特定任务上微调模型，您应该准备数据集并按如下方式执行：
 - 调整数据格式。
@@ -153,14 +149,14 @@ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_en
 --use-delta 
 ```
 
-我们建议您使用上述方案微调，如果您不便配置微调环境bmtrain，可以参考[hf页面](https://huggingface.co/openbmb/cpm-bee-10b)，使用您自己的并行化策略来微调CPM-Bee。
+我们建议您使用上述方案微调，同时您可以参考🤗[Transformers](https://huggingface.co/openbmb/cpm-bee-10b)，使用您自己的并行化策略来微调CPM-Bee。
 
 
 ### 模型压缩
 
-基于[BMCook](https://github.com/OpenBMB/BMCook)，我们对原始的CPM-Bee基座模型进行压缩，提供了多种大小的CPM-Bee模型来适应各种不同的场景。此外，我们针对不同大小的模型都提供了基于huggingface版本，您可以点击HF🤗一栏的链接，进入模型仓库查看更多相关信息。
+基于[BMCook](https://github.com/OpenBMB/BMCook)，我们对原始的CPM-Bee基座模型进行压缩，提供了多种大小的CPM-Bee模型来适应各种不同的场景。此外，我们针对不同大小的模型都提供了基于🤗Transformers的版本，您可以点击下方链接进入模型仓库查看更多信息。
 
-| 模型          | #Attn层 | #FFN层 | Attn隐状态维度 | FFN隐状态维度 | 下载                                       | HF🤗
+| 模型          | #Attn层 | #FFN层 | Attn隐状态维度 | FFN隐状态维度 | 下载                                       | 🤗Transformers
 | ----------- | ------- | ----- | --------- | -------- | ---------------------------------------- | ---- |
 | CPM-Bee-10B | 48      | 48    | 4096      | 10240    | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-10b/cpm-bee-10b.zip) | [链接](https://huggingface.co/openbmb/cpm-bee-10b) |
 | CPM-Bee-5B  | 19      | 24    | 4096      | 10240    | [链接](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-5b/cpm-bee-5b.zip) | [链接](https://huggingface.co/openbmb/cpm-bee-5b) |
@@ -172,35 +168,14 @@ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_en
 
 对于压缩后的CPM-Bee，普通的消费级显卡即可完成快速推理，不同大小的模型所占用的推理资源如下：
 
-| 模型          | 推理内存占用 | 推荐硬件           |
+| 模型          | 推理显存占用 | 推荐硬件           |
 | ----------- | ------ | -------------- |
 | CPM-Bee-10B | 20GB   | RTX 3090（24 GB） |
 | CPM-Bee-5B  | 11 GB  | RTX 3090（24 GB） |
 | CPM-Bee-2B  | 6.7 GB | GTX 1080（8 GB） |
 | CPM-Bee-1B  | 4.1 GB | GTX 1660（6 GB） |
 
-#### Huggingface
-```python
-from transformers import AutoModelForCausalLM, AutoTokenizer
-tokenizer = AutoTokenizer.from_pretrained("openbmb/cpm-bee-10b", trust_remote_code=True)
-model = AutoModelForCausalLM.from_pretrained("openbmb/cpm-bee-10b", trust_remote_code=True).cuda()
-result = model.generate({"input": "今天天气不错，", "<ans>": ""}, tokenizer)
-print(result)
-```
-我们提供了一个基于huggingface的推理脚本`text_generation_hf.py`，您可以运行
-```shell
-python text_generation_hf.py
-```
-多卡部署：
-```shell
-python text_generation_hf.py --multi-gpu
-```
-多卡部署的基础上，加载微调后的delta模型:
-```shell
-python text_generation_hf.py --multi-gpu --delta delta.pt
-```
-
-#### Local
+#### 使用本仓库
 对于具体的推理任务，您可以根据克隆下来的CPM-Bee仓库编写自己的推理代码。这里我们举一个简单的文本生成示例。
 ```python
 from cpm_live.generation.bee import CPMBeeBeamSearch
@@ -238,17 +213,38 @@ for data in data_list:
 ```bash
 python text_generation.py
 ```
-如果使用bminf:
+如果您的显存较小，想使用BMInf进行低资源推理:
 ```shell
 python text_generation.py --use-bminf --memory-limit 12
 ```
-如果希望cpu推理：
+如果希望使用CPU进行推理：
 ```shell
 python text_generation.py --device cpu
 ```
-加载微调后的delta模型:
+如果希望在推理时加载微调后的delta模型:
 ```shell
-python text_generation_hf.py --delta delta.pt
+python text_generation.py --delta delta.pt
+```
+
+#### 使用🤗Transformers
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+tokenizer = AutoTokenizer.from_pretrained("openbmb/cpm-bee-10b", trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("openbmb/cpm-bee-10b", trust_remote_code=True).cuda()
+result = model.generate({"input": "今天天气不错，", "<ans>": ""}, tokenizer)
+print(result)
+```
+我们提供了一个基于🤗Transformers的推理脚本`text_generation_hf.py`，您可以运行
+```shell
+python text_generation_hf.py
+```
+多卡部署：
+```shell
+python text_generation_hf.py --multi-gpu
+```
+多卡部署的基础上，加载微调后的delta模型:
+```shell
+python text_generation_hf.py --multi-gpu --delta delta.pt
 ```
 
 

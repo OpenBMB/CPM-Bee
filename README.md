@@ -54,7 +54,12 @@
 - **[2023/06/08]**  更新了使用CPM-Bee进行基础任务微调的[教程](https://github.com/OpenBMB/CPM-Bee/tree/main/tutorials/basic_task_finetune)。
 - **[2023/05/27]**  百亿参数，允许商用的中英双语基座模型CPM-Bee开源了，它是[**CPM-Live**](https://live.openbmb.org/)的第二个里程碑。
 
+## 🍯 CPM-Bee系列模型
 
+| 模型 | 描述 | 
+| :---: | :---: | 
+|[VisCPM](https://github.com/OpenBMB/VisCPM)| 支持多模态对话和图文双向生成的开源中英双语多模态大模型|
+|[WebCPM](https://github.com/thunlp/WebCPM)| 支持复杂问答和上网检索的开源中文大模型|
 ## 🚀 安装和使用
 您需要克隆该仓库：
 ```bash

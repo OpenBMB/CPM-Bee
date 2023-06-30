@@ -49,7 +49,7 @@
 
 ## 📰  更新信息
 
-- **[2023/06/30]**  基于CPM-Bee的多模态模型[VisCPM](https://github.com/OpenBMB/VisCPM)发布，支持多模态对话和文生图！
+- **[2023/06/30]**  基于CPM-Bee的多模态系列模型[VisCPM](https://github.com/OpenBMB/VisCPM)发布，支持多模态对话和文生图！
 - **[2023/06/16]**  CPM-Bee现已支持🤗[Transformers](https://huggingface.co/openbmb/cpm-bee-10b)。
 - **[2023/06/08]**  更新了使用CPM-Bee进行基础任务微调的[教程](https://github.com/OpenBMB/CPM-Bee/tree/main/tutorials/basic_task_finetune)。
 - **[2023/05/27]**  百亿参数，允许商用的中英双语基座模型CPM-Bee开源了，它是[**CPM-Live**](https://live.openbmb.org/)的第二个里程碑。

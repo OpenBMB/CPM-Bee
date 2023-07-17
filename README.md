@@ -183,14 +183,14 @@ $ pip install -r requirements.txt
             ...
         ```
         - json格式
-        ```json
+        ```
             ...
             ...
             {"template": "Does the answer correctly answer the question", "sentence": "Unicode has the explicit aim of transcending ...", "question": "What is the aim of Unicode?", "options": {"<option_0>": "no", "<option_1>": "yes"}, "<ans>": "<option_1>"}
             ... 
             ...
         ```
-    - **案例**：我们提供了[wiki(txt格式，纯文本)]()和[flan(json格式，选择题)]()的样例，可以下载后按下列文件路径中的raw_data进行文件组织，完成后续步骤的尝试。
+    - **案例**：我们提供了[wiki(txt格式，纯文本)](https://pan.baidu.com/s/4jNUmqpC)和[flan(json格式，选择题)](https://pan.baidu.com/s/4jNUmqpC)的样例，可以下载后按下列文件路径中的raw_data进行文件组织，完成后续步骤的尝试。
     - ```
         CPMBee/
         ├── src

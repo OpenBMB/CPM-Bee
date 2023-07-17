@@ -37,17 +37,14 @@
 说明：CPM-Bee是一个**基座**模型，即从零开始通过**预训练**得来。我们鼓励用户在自己的场景和数据上**适配/微调/对齐**后再进行使用。例如，[WebCPM](https://github.com/thunlp/WebCPM) 以CPM-Bee为基座，在人类网络检索的序列化数据上进行适配，获得了复杂问答和上网检索的能力。后续我们将会发布更多在CPM-Bee基座模型基础上适配的模型。
 
 <div align="center">
-
-<img src="https://i.imgloc.com/2023/06/07/VwgLLN.png" width="660px">
-
-<div align="center">
-本仓库主要提供 CPM-Bee 基座模型
-</div>
-
+  <img src="https://i.imgloc.com/2023/06/07/VwgLLN.png" width="660px">
+  <div align="center">
+  本仓库主要提供 CPM-Bee 基座模型
+  </div>
 </div>
 
 
-## 📰  更新信息
+## 📰 更新信息
 
 - **[2023/06/30]**  基于CPM-Bee的多模态系列模型[VisCPM](https://github.com/OpenBMB/VisCPM)发布，支持多模态对话和文生图！
 - **[2023/06/16]**  CPM-Bee现已支持🤗[Transformers](https://huggingface.co/openbmb/cpm-bee-10b)。
@@ -60,6 +57,7 @@
 | :---: | :---: | 
 |[VisCPM](https://github.com/OpenBMB/VisCPM)| 支持多模态对话和图文双向生成的开源中英双语多模态大模型|
 |[WebCPM](https://github.com/thunlp/WebCPM)| 支持复杂问答和上网检索的开源中文大模型|
+
 ## 🚀 安装和使用
 您需要克隆该仓库：
 ```bash
@@ -75,23 +73,422 @@ $ git clone -b main --single-branch https://github.com/OpenBMB/CPM-Bee.git
 $ cd src
 $ pip install -r requirements.txt
 ```
+注意**torch版本需与CUDA版本对应，不然会引起安装错误**，尤其是torch也是通过pip install -r requirements.txt进行安装时，较为容易出现自动拉取安装的torch版本与本地CUDA版本不对应，导致BMTrain无法安装。
 
 ### 模型
 
 - [**10B模型下载链接**](https://openbmb.oss-cn-hongkong.aliyuncs.com/model_center/cpm-bee-10b/cpm-bee-10b.zip)（如果要使用🤗Transformers运行模型，请参考[这里](https://huggingface.co/openbmb/cpm-bee-10b)）。
 
-- CPM-Bee的基座模型可以准确地进行语义理解，高效完成各类基础任务，包括：填空、文本生成、翻译、问答、评分预测、文本选择题等等。
+### 数据格式
+- 不同于已有基座模型采用非结构化的自由文本形式组织数据，CPM-Bee采用结构化的json格式来组织数据。对于结构化数据，CPM-Bee的基座模型可以准确地进行语义理解，高效完成各类基础任务，包括：填空、文本生成、翻译、问答、评分预测、文本选择题等等，下面给出一些代表性任务的模板：
 
 ```json
-"填空":{"input": "心理学领域的研究人员发现，做出重要决定的最好方法之一，比如选择一所大学或<mask_0>，都涉及到使用决策工作表。研究优化的心理学家将<mask_1>与理论理想决策进行比较，看看它们有多相似。工作表程序的支持者认为它会产生最优的，也就是说，最好的决策。虽然有<mask_2>可以接受，但它们在本质上都是相似的。","<ans>":{"<mask_0>":"","<mask_1>":"","<mask_2>":""}},
-"文本生成": {"input": "今天天气很好，我和妈妈一起去公园，", "prompt": "往后写约100字", "<ans>": ""}
-"翻译": {"input": "北京是中国的首都", "prompt": "中翻英", "<ans>": ""}
-"问答": {"input": "NGC 6231是一个位于天蝎座的疏散星团，天球座标为赤经16时54分，赤纬-41度48分，视觉观测大小约45角分，亮度约2.6视星等，距地球5900光年。NGC 6231年龄约为三百二十万年，是一个非常年轻的星团，星团内的最亮星是5等的天蝎座 ζ1星。用双筒望远镜或小型望远镜就能看到个别的行星。NGC 6231在1654年被意大利天文学家乔瓦尼·巴蒂斯特·霍迪尔纳（Giovanni Battista Hodierna）以Luminosae的名字首次纪录在星表中，但是未见记载于夏尔·梅西耶的天体列表和威廉·赫歇尔的深空天体目录。这个天体在1678年被爱德蒙·哈雷（I.7）、1745年被夏西亚科斯（Jean-Phillippe Loys de Cheseaux）（9）、1751年被尼可拉·路易·拉卡伊（II.13）分别再次独立发现。", "question": "NGC 6231的经纬度是多少？", "<ans>": ""}
-"评分预测": {"input":"之前多次聚餐都选择这里，有各种大小的包房同时能容纳很多人，环境好有特色还有表演，整体聚餐氛围一下被带动起来。现在由于炭火改成了电烤羊，口感真的不如从前，不过其他菜品都还是不错，烤羊剩下的拆骨肉最后还能再加工一下椒盐的也很好吃。","question":"评分是多少？(1-5)","<ans>":""},
-"选择题": {"input": "父母都希望自己的孩子诚实、勇敢、有礼貌。要想让孩子成为这样的人，父母首先得从自己做起，要是连自己都做不到，又怎能要求孩子做到呢？", "options": {"<option_0>": "少提要求", "<option_1>": "降低标准", "<option_2>": "自己先做好", "<option_3>": "让孩子拿主意"}, "question": "教育孩子时，父母应该：", "<ans>": ""}
+  "填空":{
+    "input": "心理学领域的研究人员发现，做出重要决定的最好方法之一，比如选择一所大学或<mask_0>，都涉及到使用决策工作表。研究优化的心理学家将<mask_1>与理论理想决策进行比较，看看它们有多相似。工作表程序的支持者认为它会产生最优的，也就是说，最好的决策。虽然有<mask_2>可以接受，但它们在本质上都是相似的。",
+    "<ans>":{
+      "<mask_0>":"",
+      "<mask_1>":"",
+      "<mask_2>":""
+    }
+  }
+
+  "文本生成": {
+    "input": "今天天气很好，我和妈妈一起去公园，", 
+    "prompt": "往后写约100字", 
+    "<ans>": ""
+  }
+
+  "翻译": {
+    "input": "北京是中国的首都", 
+    "prompt": "中翻英", 
+    "<ans>": ""
+  }
+
+  "问答": {
+    "input": "NGC 6231是一个位于天蝎座的疏散星团，天球座标为赤经16时54分，赤纬-41度48分，视觉观测大小约45角分，亮度约2.6视星等，距地球5900光年。NGC 6231年龄约为三百二十万年，是一个非常年轻的星团，星团内的最亮星是5等的天蝎座 ζ1星。用双筒望远镜或小型望远镜就能看到个别的行星。NGC 6231在1654年被意大利天文学家乔瓦尼·巴蒂斯特·霍迪尔纳（Giovanni Battista Hodierna）以Luminosae的名字首次纪录在星表中，但是未见记载于夏尔·梅西耶的天体列表和威廉·赫歇尔的深空天体目录。这个天体在1678年被爱德蒙·哈雷（I.7）、1745年被夏西亚科斯（Jean-Phillippe Loys de Cheseaux）（9）、1751年被尼可拉·路易·拉卡伊（II.13）分别再次独立发现。", 
+    "question": "NGC 6231的经纬度是多少？", 
+    "<ans>": ""
+  }
+
+  "评分预测": {
+    "input":"之前多次聚餐都选择这里，有各种大小的包房同时能容纳很多人，环境好有特色还有表演，整体聚餐氛围一下被带动起来。现在由于炭火改成了电烤羊，口感真的不如从前，不过其他菜品都还是不错，烤羊剩下的拆骨肉最后还能再加工一下椒盐的也很好吃。",
+    "question":"评分是多少？(1-5)",
+    "<ans>":""
+  }
+
+  "选择题": {
+    "input": "父母都希望自己的孩子诚实、勇敢、有礼貌。要想让孩子成为这样的人，父母首先得从自己做起，要是连自己都做不到，又怎能要求孩子做到呢？", 
+    "options": {
+      "<option_0>": "少提要求", 
+      "<option_1>": "降低标准",
+      "<option_2>": "自己先做好",
+      "<option_3>": "让孩子拿主意"
+    }, 
+    "question": "教育孩子时，父母应该：", 
+    "<ans>": ""
+  }
 ```
 
-## <img src="https://i.imgloc.com/2023/05/21/V4nLS3.png" width="25px"> OpenBMB
+- **注意**在模型推理时可采用上述模板，在模型训练时需在<ans>中""处填上标准答案，如：
+
+```json
+  {
+    "input": "北京是中国的首都", 
+    "prompt": "中翻英", 
+    "<ans>": "Beijing is the capital of China"
+  }
+
+
+  {
+    "input": "父母都希望自己的孩子诚实、勇敢、有礼貌。要想让孩子成为这样的人，父母首先得从自己做起，要是连自己都做不到，又怎能要求孩子做到呢？", 
+    "options": {
+      "<option_0>": "少提要求", 
+      "<option_1>": "降低标准",
+      "<option_2>": "自己先做好",
+      "<option_3>": "让孩子拿主意"
+    }, 
+    "question": "教育孩子时，父母应该：", 
+    "<ans>": "<option_2>"
+  }
+```
+
+- CPM-Bee在预训练阶段注入了一些json格式，可以直接使用，也支持用户自己设计json格式然后微调模型。所有的json格式需要满足下列条件：
+    - 输出内容**必须**使用<ans>作为键值来组织；
+    - 选择题的选项建议使用<option_xx>来组织，且xx为数字；
+    - 填空题的空白建议使用<mask_xx>来组织，且xx为数字；
+    - 因为"<"在CPM-Bee中会作为识别 <ans>、<option_xx>、<mask_xx>的触发符，所以在数据中文中**必须**将"<"转化为"<<"进行转义，例如在下面的例子中"1 < 2"、"10 < 8"被转写为"1 << 2"、"10 << 8"：
+
+```
+  {
+    "question": "下面哪项是正确的", 
+    "options": {
+      "<option_0>": "1 << 2", 
+      "<option_1>": "10 << 8",
+    }, 
+    "<ans>": "<option_0>"
+  }
+```
+
+## 模型预训练
+
+1. **数据清洗**
+    - 需要将每个样本放置为一行，换行进行转义变为\\n，格式可为txt也可为json，例如：
+        - txt格式
+        ```
+            ...
+            ...
+            How can cross training benefit groups like runners, swimmers, or weightlifters?\n\n1. Reduces the risk of injury...\n\n2. Improves overall fitness...
+            Are there any particular physical benefits to mindful walking, such as improved posture or increased physical fitness?\n\n1. Choose a quiet and peaceful environment...\n\n2. Start by tuning into your breath and becoming aware of your surroundings...
+            ... 
+            ...
+        ```
+        - json格式
+        ```json
+            ...
+            ...
+            {"template": "Does the answer correctly answer the question", "sentence": "Unicode has the explicit aim of transcending ...", "question": "What is the aim of Unicode?", "options": {"<option_0>": "no", "<option_1>": "yes"}, "<ans>": "<option_1>"}
+            ... 
+            ...
+        ```
+    - **案例**：我们提供了[wiki(txt格式，纯文本)]()和[flan(json格式，选择题)]()的样例，可以下载后按下列文件路径中的raw_data进行文件组织，完成后续步骤的尝试。
+    - ```
+        CPMBee/
+        ├── src
+        |   └── ...
+        └── raw_data（原始数据位置）
+            ├── wiki
+            |   └── raw.txt（txt原始数据）
+            └── flan
+                └── raw.json（json原始数据）
+        ```
+
+2. 数据集生成
+    - CPMBee为了高效读取数据以及在分布式文件系统上进行数据集部署，需要将其转化成二进制文件，具体调用src下的build_dataset.py，具体参数包括：
+        - --input-path: 导入的原始数据路径，程序会将路径下的文件统一打包进行处理
+        - --output-path: 导出的数据集路径
+        - --output-name: 导出的数据集名称
+        - --data-type: txt/json
+        - --min-length: 小于最小长度的数据将被抛弃
+        - --max-length: 超过最大长度的数据将被切分
+        - txt格式的原始数据将按照min-length和max-length进行切分，然后统一以{'text':'......'}的json格式导出到数据集
+    - 导出的数据集将有两个文件，一个名为output-name的二进制文件，一个meta.bin文件，meta.bin文件中记录了output-name的元信息，包括：
+        - "file_name": meta.bin对应的文件名，一般就是output-name
+        - "block_begin": 数据集按块分布存储，数据集所在的开始块，一般是0
+        - "block_end": 数据集按块分布存储，数据集所在的结束块，一般是总块数  
+        - "nbytes": 60221163, 总的数据集大小
+        - "nlines": 41733, 总的数据集行数
+        - "block_size": 16777216，数据集每块大小
+    - **案例**：我们将样例给定的wiki和flan生成为数据集：
+    - ```bash
+        $ cd CPMBee/src
+        $ python build_dataset.py --input-path ../raw_data/wiki/  --output-path ../datasets/wiki/ --output-name wiki --data-type txt --min-length 100 --max-length 10000
+        $ python build_dataset.py --input-path ../raw_data/flan/  --output-path ../datasets/flan/ --output-name flan --data-type json
+        ```
+        - 生成之后的文件结构为：
+        ```
+        CPMBee/
+        ├── src
+        |   ├── ...
+        |   └── build_dataset.py
+        ├── raw_data
+        |   ├── wiki
+        |   |   └── raw.txt
+        |   └── flan
+        |       └── raw.json
+        └── datasets（生成的数据集）
+            ├── wiki（wiki对应的数据集）
+            |   └── data
+            |       ├── wiki
+            |       └── meta.bin
+            └── flan（flan对应的数据集）
+                └── data
+                    ├── flan
+                    └── meta.bin
+        ```
+3. 任务转换脚本
+    - 对于每个数据集，可以撰写任务转换脚本来对数据集中的json格式进行改写，改写成各类预训练任务。
+    - 脚本格式需满足以下格式：
+        ```python
+            import random
+            
+            def transform(data, num_sample: int, r: random.Random):
+                ...
+        ```
+        - 对于每个数据集，CPMBee的底层文件系统将会自动导入数据集，读出数据，然后调用任务转换脚本进行改造。
+        - 转换脚本包含三个输入参数，data为读出样本，num_sample为读出的样本数量（通常为1条，in-context learning设定下会有多条），r为随机生成器。
+    - **案例**：针对wiki和flan写转换脚本：
+        - wiki脚本
+        ```python
+        import random
+        
+        def rand(n: int, r: random.Random):
+            return int(r.random() * n)
+        
+        def transform(data, num_sample: int, r: random.Random):
+            # 按照之前的步骤，wiki中的数据都为{'text':'...'}形式
+            text = data['text']
+            # 随机遮蔽50%~100%的内容进行预测
+            mid = rand(len(text) // 2, r)
+            # CPMBee需要<来识别特殊键，所以需要将内容中的<转换为<<进行转义
+            ipt = text[:mid].replace("<", "<<")
+            ans = text[mid:].replace("<", "<<")
+            return {"input": ipt,
+                    "<ans>": ans}
+        ```
+        - flan脚本
+        ```python
+        import random
+        
+        def transform(data, num_sample: int, r: random.Random):
+            # 按照之前的步骤，flan中的数据已经是选择题的json格式了，且包含<ans>键，所以直接返回进行训练
+            return data
+        ```
+        - 写完任务转换脚本后的文件结构为：
+        ```
+        CPMBee/
+        ├── src
+        |   ├── ...
+        |   └── build_dataset.py
+        ├── raw_data
+        |   ├── wiki
+        |   |   └── raw.txt
+        |   |
+        |   └── flan
+        |       └── raw.json
+        └── datasets
+            ├── wiki
+            |   ├── data
+            |   |   ├── wiki
+            |   |   └── meta.bin
+            |   └── transform.py（wiki对应的任务转换脚本）
+            └── flan
+                ├── data
+                |   ├── flan
+                |   └── meta.bin
+                └── transform.py（flan对应的任务转换脚本）
+        ```
+4. 数据集脚本
+    - 所有参与训练的数据集需要一个数据集脚本来进行信息汇总，数据集脚本也是一个json文件，格式如下
+    - ```json
+        [
+            {
+                "dataset_name": "wiki",
+                "task_name": "lm",
+                "weight": 1.0,
+                "path": "wiki/data",
+                "incontext_weight": [1.0],
+                "transforms": "wiki/transform.py"
+            },
+            {
+                "dataset_name": "flan",
+                "task_name": "nlu",
+                "weight": 1.0,
+                "path": "flan/data",
+                "incontext_weight": [1.0],
+                "transforms": "flan/transform.py"
+            }
+        ]
+        ```
+       - 其中，包含参数有：
+           - dataset_name: 数据集名称；
+           - task_name: 数据集所属任务，task_name+dataset_name将作为训练过程中识别数据集的标签，task_name则可用于训练过程中针对任务分别汇总loss信息；
+           - weight: 采样权重；
+           - path: meta.bin、二进制数据对应的路径；
+           - transforms: 任务转换脚本对应的路径；
+           - incontext_weight: 训练样本叠加，[1.0]表示100%的概率采样一个样本，[0.8, 0.2]表示20%概率采样两个样本进行拼接，[0.75, 0.1, 0.15]表示15%概率采样三个样本、10%的概率采样两个样本进行拼接。
+       - **案例**：写完数据集脚本汇总wiki和flan数据集后的文件路径结构
+        ```bash
+        CPMBee/
+        ├── src
+        |   ├── ...
+        |   └── build_dataset.py
+        ├── raw_data
+        |   ├── wiki
+        |   |   └── raw.txt
+        |   └── flan
+        |       └── raw.json
+        └── datasets
+            ├── datasets.json（数据集脚本）
+            ├── wiki
+            |   ├── data
+            |   |   ├── wiki
+            |   |   └── meta.bin
+            |   └── transform.py
+            └── flan
+                ├── data
+                |   ├── flan
+                |   └── meta.bin
+                └── transform.py
+        ```
+
+5. 预训练脚本
+    - 预训练脚本如下
+    - ```bash
+        #! /bin/bash
+        # 每台机器的卡数
+        GPUS_PER_NODE=8
+        # 机器台数
+        NNODES=1
+        # master机器的IP和端口，更多信息可以参考pytorch分布式训练文档
+        MASTER_ADDR="localhost"
+        MASTER_PORT=12345
+        
+        OPTS=""
+        # model and dataset settings
+        # 模型配置
+        OPTS+=" --model-config config/cpm-bee-10b.json"
+        # 步骤4数据集脚本位置
+        OPTS+=" --dataset ../datasets/datasets.json"
+        # training settings
+        # 训练步数
+        OPTS+=" --train-iters 200000"
+        # 单卡的batch size
+        OPTS+=" --batch-size 2"
+        # 样本最大长度，注意CPMBee底层会拼接数据确保max-length的利用效率
+        OPTS+=" --max-length 2048"
+        # 学习率，如果接着之前的ckpt继续训练，建议改小
+        OPTS+=" --lr 0.01"
+        # warmup步数
+        OPTS+=" --warmup-iters 2000"
+        # 学习率下降的机制
+        OPTS+=" --lr-decay-style noam"
+        # weight decay，这个会结合到AdamW中
+        OPTS+=" --weight-decay 0.01"
+        # 梯度裁剪的范围
+        OPTS+=" --clip-grad 1.0"
+        # 混合精度loss加倍系数
+        OPTS+=" --loss-scale 1048576"
+        # 混合精度loss加倍系数的增长/降低倍数
+        OPTS+=" --loss-scale-factor 2"
+        # 每隔多少步loss加倍系数进行增长
+        OPTS+=" --loss-scale-steps 128"
+        # log settings
+        # 每隔多少步打印参数均值方差、梯度均值方差
+        OPTS+=" --inspect-iters 100"
+        # log文件输出路径
+        OPTS+=" --log-dir ../logs/train/"
+        # tensorboard文件输出路径
+        OPTS+=" --tensorboard ../logs/tensorboard/cpm_live_48_4096/"
+        # saving ckpts
+        # 每隔多少步输出ckpt
+        OPTS+=" --save-iters 500"
+        # 输出ckpt的路径
+        OPTS+=" --save ../results/"
+        # 输出ckpt的名称，CPMBee在输出ckpt时会打印步数
+        OPTS+=" --save-name cpm_live_checkpoint"
+        # loading ckpts，如果加载老的ckpt就把下列注释打开，然后填写MODEL_STEPS
+        # MODEL_STEPS="0"
+        # OPTS+=" --start-step ${MODEL_STEPS}"
+        # OPTS+=" --load ../results/cpm_live_checkpoint-${MODEL_STEPS}.pt"
+        # 是否加载历史梯度
+        # OPTS+=" --load-grad "
+        
+        CMD="torchrun --nnodes=${NNODES} --nproc_per_node=${GPUS_PER_NODE} --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=${MASTER_ADDR}:${MASTER_PORT} pretrain_cpm_bee.py ${OPTS}"
+        
+        echo ${CMD}
+        $CMD
+        ```
+    - **案例**：写完预训练脚本后的文件路径结构
+    - ```bash
+        CPMBee/
+        ├── src
+        |   ├── scripts
+        |   |      └── pretrain_cpm_bee.sh（预训练脚本）
+        |   ├── pretrain_cpm_bee.py
+        |   └── build_dataset.py
+        ├── raw_data
+        |   ├── wiki
+        |   |   └── raw.txt
+        |   └── flan
+        |       └── raw.json
+        └── datasets
+            ├── datasets.json
+            ├── wiki
+            |   ├── data
+            |   |   ├── wiki
+            |   |   └── meta.bin
+            |   └── transform.py
+            └── flan
+                ├── data
+                |   ├── flan
+                |   └── meta.bin
+                └── transform.py
+        ```
+6. 预训练命令
+    - ```bash
+        cd CPMBee/src
+        bash scripts/pretrain_cpm_bee.sh
+        ```
+    - **案例**：写完预训练脚本后的文件路径结构
+    - ```bash
+        CPMBee/
+        ├── src
+        |   ├── scripts
+        |   |      └── pretrain_cpm_bee.sh
+        |   ├── pretrain_cpm_bee.py
+        |   └── build_dataset.py
+        ├── results（ckpt输出路径）
+        ├── logs（log文件输出路径）                
+        ├── raw_data
+        |   ├── wiki
+        |   |   └── raw.txt
+        |   └── flan
+        |       └── raw.json
+        └── datasets
+            ├── datasets.json
+            ├── wiki
+            |   ├── data
+            |   |   ├── wiki
+            |   |   └── meta.bin
+            |   └── transform.py
+            └── flan
+                ├── data
+                |   ├── flan
+                |   └── meta.bin
+                └── transform.py
+        ```
+
+## <img src="https://i.imgloc.com/2023/05/21/V4nLS3.png" width="25px"> OpenBMB 衍生功能
 
 基于OpenBMB的大模型系统生态，我们在训练CPM-Bee的过程中实现了全流程高效。同时提供了模型微调（基于BMTrain和OpenDelta）、工具使用（基于BMTools）、模型压缩（基于BMCook）、低资源推理（基于BMInf）的全套脚本，可以协助开发者快速上手和使用CPM-Bee。
 
@@ -109,7 +506,6 @@ $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_
 $ torchrun --nnodes=1 --nproc_per_node=4 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint=localhost:12345 finetune_cpm_bee.py \
 --use-delta \
 ```
-
 
 **微调流程**
 

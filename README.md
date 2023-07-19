@@ -190,7 +190,7 @@ $ pip install -r requirements.txt
             ... 
             ...
         ```
-    - **案例**：我们提供了[wiki(txt格式，纯文本)](https://pan.baidu.com/s/4jNUmqpC)和[flan(json格式，选择题)](https://pan.baidu.com/s/4jNUmqpC)的样例，可以下载后按下列文件路径中的raw_data进行文件组织，完成后续步骤的尝试。
+    - **案例**：我们提供了[wiki(txt格式，纯文本)](https://thunlp.oss-cn-qingdao.aliyuncs.com/hx/raw_data.zip)和[flan(json格式，选择题)](https://thunlp.oss-cn-qingdao.aliyuncs.com/hx/raw_data.zip)的样例，可以下载后按下列文件路径中的raw_data进行文件组织，完成后续步骤的尝试。
     - ```
         CPMBee/
         ├── src

@@ -48,6 +48,7 @@ class CPMBeeConfig(Config):
         eps=1e-6,
         half: bool = True,
         mask_modules: Optional[List[Tuple[bool, bool]]] = None,
+        int4:  Optional[bool] = None,
     ):
 
         super().__init__()
@@ -67,7 +68,7 @@ class CPMBeeConfig(Config):
             self.dtype = torch.float
         self.vocab_size = vocab_size
         self.mask_modules = mask_modules
-
+        self.int4 = int4
 
 class CPMBee(bmt.DistributedModule):
     def __init__(self, config: CPMBeeConfig):
@@ -84,6 +85,7 @@ class CPMBee(bmt.DistributedModule):
             eps=config.eps,
             dropout_p=config.dropout_p,
             mask_modules=config.mask_modules,
+            int4 = config.int4,
         )
 
         self.input_embedding = EmbeddingExt(

@@ -33,6 +33,7 @@ class Encoder(bmt.DistributedModule):
         dtype (optional): Defaults to torch.half.
         eps (float, optional): eps used in :py:class:`model_center.layer.LayerNorm`. Defaults to 1e-6.
         dropout_p (float, optional): Defaults to 0.
+        int4 (int, optional): whether to use int4 to load model. Defaults to False.
     """  # noqa: E501
 
     def __init__(
@@ -46,6 +47,7 @@ class Encoder(bmt.DistributedModule):
         eps: float = 1e-6,
         dropout_p: Optional[float] = None,
         mask_modules: Optional[List[Tuple[bool, bool]]] = None,
+        int4: Optional[bool] = None,
     ):
 
         super().__init__()
@@ -76,6 +78,7 @@ class Encoder(bmt.DistributedModule):
                         dropout_p=dropout_p,
                         mask_att=mask_modules[ith][0],
                         mask_ffn=mask_modules[ith][1],
+                        int4=int4,
                     )
                 )
                 for ith in range(num_layers)

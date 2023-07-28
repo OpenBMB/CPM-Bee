@@ -16,7 +16,7 @@
 from typing import Optional
 import torch
 import bmtrain as bmt
-from .linear import Linear
+from .linear import Linear, Linear4bit
 
 
 class DenseGatedACT(bmt.DistributedModule):
@@ -25,22 +25,33 @@ class DenseGatedACT(bmt.DistributedModule):
         dim_in: int,
         dim_ff: int,
         dtype=torch.half,
+        int4: Optional[bool] = None,
     ):
         super().__init__()
+        if int4 is None or int4 is False:   
+            self.w_0 = Linear(
+                dim_in=dim_in,
+                dim_out=dim_ff,
+                dtype=dtype,
+                scale_before=False,
+            )
 
-        self.w_0 = Linear(
-            dim_in=dim_in,
-            dim_out=dim_ff,
-            dtype=dtype,
-            scale_before=False,
-        )
+            self.w_1 = Linear(
+                dim_in=dim_in,
+                dim_out=dim_ff,
+                dtype=dtype,
+                scale_before=False,
+            )
+        else:
+            self.w_0 = Linear4bit(
+                dim_in=dim_in,
+                dim_out=dim_ff,
+            )
 
-        self.w_1 = Linear(
-            dim_in=dim_in,
-            dim_out=dim_ff,
-            dtype=dtype,
-            scale_before=False,
-        )
+            self.w_1 = Linear4bit(
+                dim_in=dim_in,
+                dim_out=dim_ff,
+            )
         self.act = torch.nn.GELU()
 
     def forward(self, x: torch.Tensor):
@@ -74,6 +85,7 @@ class FeedForward(bmt.DistributedModule):
         bias (bool, optional): whether to use bias term in fully-connected layers used in feed-forward module. Defaults to False.
         activate_fn (str, optional): Defaults to `gated_gelu`.
         dropout_p (int, optional): Defaults to 0.
+        int4 (int, optional): whether to use int4 to load model. Defaults to False.
     """  # noqa: E501
 
     def __init__(
@@ -82,6 +94,7 @@ class FeedForward(bmt.DistributedModule):
         dim_ff: int,
         dtype=torch.half,
         dropout_p: Optional[float] = None,
+        int4: Optional[bool] = None,
     ):
 
         super().__init__()
@@ -90,6 +103,7 @@ class FeedForward(bmt.DistributedModule):
             dim_in=dim_model,
             dim_ff=dim_ff,
             dtype=dtype,
+            int4=int4,
         )
 
         if dropout_p is not None:
@@ -97,11 +111,17 @@ class FeedForward(bmt.DistributedModule):
         else:
             self.dropout = None
 
-        self.w_out = Linear(
-            dim_in=dim_ff,
-            dim_out=dim_model,
-            dtype=dtype,
-            scale_before=False,
+        if int4 is None or int4 is False:
+            self.w_out = Linear(
+                dim_in=dim_ff,
+                dim_out=dim_model,
+                dtype=dtype,
+                scale_before=False,
+            )
+        else:
+            self.w_out = Linear4bit(
+                dim_in=dim_ff,
+                dim_out=dim_model,
         )
 
     def forward(self, x: torch.Tensor):

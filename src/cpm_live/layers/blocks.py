@@ -31,6 +31,7 @@ class SelfAttentionBlock(bmt.DistributedModule):
         dtype (optional): Defaults to torch.half.
         eps (float, optional): eps used in :py:class:`model_center.layer.LayerNorm`. Defaults to 1e-5.
         dropout_p (float, optional): Defaults to 0.
+        int4 (int, optional): whether to use int4 to load model. Defaults to False.
     """  # noqa: E501
 
     def __init__(
@@ -41,6 +42,8 @@ class SelfAttentionBlock(bmt.DistributedModule):
         dtype=torch.half,
         eps: float = 1e-6,
         dropout_p: Optional[float] = None,
+        int4: Optional[bool] = None,
+
     ):
 
         super().__init__()
@@ -57,6 +60,7 @@ class SelfAttentionBlock(bmt.DistributedModule):
             dim_head=dim_head,
             dtype=dtype,
             dropout_p=dropout_p,
+            int4=int4,
         )
 
         if dropout_p:
@@ -108,6 +112,7 @@ class FFNBlock(torch.nn.Module):
         dtype (optional): Defaults to torch.half.
         eps (float, optional): eps used in :py:class:`model_center.layer.LayerNorm`. Defaults to 1e-5.
         dropout_p (float, optional): Defaults to 0.
+        int4 (int, optional): whether to use int4 to load model. Defaults to False.
     """  # noqa: E501
 
     def __init__(
@@ -117,6 +122,7 @@ class FFNBlock(torch.nn.Module):
         dtype=torch.half,
         eps: float = 1e-6,
         dropout_p: Optional[float] = 0,
+        int4: Optional[bool] = None,
     ):
         super().__init__()
 
@@ -131,6 +137,7 @@ class FFNBlock(torch.nn.Module):
             dim_ff,
             dtype=dtype,
             dropout_p=dropout_p,
+            int4=int4,
         )
 
         if dropout_p:
@@ -169,6 +176,7 @@ class TransformerBlock(torch.nn.Module):
         dtype (optional): Defaults to torch.half.
         eps (float, optional): eps used in :py:class:`model_center.layer.LayerNorm`. Defaults to 1e-5.
         dropout_p (float, optional): Defaults to 0.
+        int4 (int, optional): whether to use int4 to load model. Defaults to False.
     """  # noqa: E501
 
     def __init__(
@@ -182,6 +190,7 @@ class TransformerBlock(torch.nn.Module):
         dropout_p: Optional[float] = None,
         mask_att: bool = False,
         mask_ffn: bool = False,
+        int4: Optional[bool] = None,
     ):
         super().__init__()
         self.mask_att = mask_att
@@ -195,6 +204,7 @@ class TransformerBlock(torch.nn.Module):
                 dtype=dtype,
                 eps=eps,
                 dropout_p=dropout_p,
+                int4=int4,
             )
 
         if not self.mask_ffn:
@@ -204,6 +214,7 @@ class TransformerBlock(torch.nn.Module):
                 dtype=dtype,
                 eps=eps,
                 dropout_p=dropout_p,
+                int4=int4,
             )
 
     def forward(

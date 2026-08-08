@@ -10,5 +10,6 @@
     "position_bias_num_segment_buckets": 256,
     "position_bias_max_distance" : 2048,
     "eps" : 1e-6,
-    "half" : true
+    "half" : true,
+    "int4" : false
 }
